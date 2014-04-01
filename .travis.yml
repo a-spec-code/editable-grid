@@ -1,17 +1,16 @@
 language: node_js
 node_js:
-  - 0.10
+    - 0.10
 before_deploy: "grunt build"
 deploy:
-  provider: s3
-  bucket: "skinnybrit51.com"
-  upload_dir: "booty-grid"
-  skip_cleanup: true
-  secret_access_key:
-    secure: zDiuEZgn1THVJyvqE4FcKXPXY/Aozy2gm1gHDkHCooVoZuRtU31tz1N6zWp3yVJ3JZFk4zDO7zyWGjtAba5ydh8FNOl+F/L0RVpYfiSpoiJA7PZlXAw1WKPiyY21luCctZeJc/eZry8ZseM190Q+UzbiqLLjtteO1CHeZo3XptM=
-  access_key_id:
-    secure: yj/T/lSSr1MMyUZMiS2IGqvFG78ExJQi06wxa5+7M2Rfz1G5LaiVH+9mqcE5qVmu1q54/CmwT1OUNdeXy/SUOwre4L7ZshS9LfK/7BcATMjIvCSysNT3AEOIx63NtRWabzQMiQu25h5owVbvwTBMN6N6+C/g5yq46XQsvoy6xz8=
-  local-dir: public
+    provider: s3
+    bucket: "skinnybrit51.com"
+    upload_dir: "booty-grid"
+    skip_cleanup: true
+    secret_access_key:
+        secure: zDiuEZgn1THVJyvqE4FcKXPXY/Aozy2gm1gHDkHCooVoZuRtU31tz1N6zWp3yVJ3JZFk4zDO7zyWGjtAba5ydh8FNOl+F/L0RVpYfiSpoiJA7PZlXAw1WKPiyY21luCctZeJc/eZry8ZseM190Q+UzbiqLLjtteO1CHeZo3XptM=
+    access_key_id:
+        secure: yj/T/lSSr1MMyUZMiS2IGqvFG78ExJQi06wxa5+7M2Rfz1G5LaiVH+9mqcE5qVmu1q54/CmwT1OUNdeXy/SUOwre4L7ZshS9LfK/7BcATMjIvCSysNT3AEOIx63NtRWabzQMiQu25h5owVbvwTBMN6N6+C/g5yq46XQsvoy6xz8=
+    local-dir: public
     on:
-      branch: master
-      repo: booty-grid
+        branch: master
