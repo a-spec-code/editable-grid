@@ -297,8 +297,16 @@ describe('Grid Utils', function () {
     });
 
     it('Should parse the values when a new value changes', function () {
+        var formatter = function (id, value) {
+            return value;
+        };
         var data = [];
         var options = {
+            rows: {
+                newRowData: function (currentData) {
+                    return currentData;
+                }
+            },
             id: 'id',
             el: $('<div><div class="booty-footer-table"><tr class="new-row">' +
                 '<td data-col-id="string"><input value="hello"/></td>' +
@@ -315,28 +323,32 @@ describe('Grid Utils', function () {
                     type: 'string',
                     parser: function (id, value) {
                         return value;
-                    }
+                    },
+                    formatter: formatter
                 },
                 {
                     id: 'cost',
                     type: 'cost',
                     parser: function (id, value) {
                         return parseFloat(value);
-                    }
+                    },
+                    formatter: formatter
                 },
                 {
                     id: 'percent',
                     type: 'percent',
                     parser: function (id, value) {
                         return parseFloat(value) / 100;
-                    }
+                    },
+                    formatter: formatter
                 },
                 {
                     id: 'date',
                     type: 'date',
                     parser: function (id, value) {
                         return value;
-                    }
+                    },
+                    formatter: formatter
                 },
                 {
                     id: 'select',
@@ -344,7 +356,8 @@ describe('Grid Utils', function () {
                     list: ['a', 'b', 'c'],
                     parser: function (id, value) {
                         return value;
-                    }
+                    },
+                    formatter: formatter
                 },
                 {
                     id: 'checkbox',
@@ -361,12 +374,13 @@ describe('Grid Utils', function () {
             ears: new Ears()
         };
         var utils = gridUtils.call(grid, options);
-
+        var newRowDataSpy = this.sandbox.spy(options.rows, 'newRowData');
         var callback = this.sandbox.spy();
 
         grid.ears.on('booty-new-row-value-changed', callback);
 
         expect(callback.callCount).to.equal(0);
+        expect(newRowDataSpy.callCount).to.equal(0);
         utils._newRowChanged();
 
         expect(callback.callCount).to.equal(1);
@@ -376,6 +390,8 @@ describe('Grid Utils', function () {
         expect(callback.args[0][0].date).to.equal('2014-01-01');
         expect(callback.args[0][0].select).to.equal('a');
         expect(callback.args[0][0].checkbox).to.be.true;
+
+        expect(newRowDataSpy.callCount).to.equal(1);
     });
 
     it('Should fire an event when a row is clicked', function () {
@@ -605,6 +621,63 @@ describe('Grid Utils', function () {
 
         expect(el.find('tr')).to.have.length(2);
         expect(el.find('tr[data-row-id="2"]')).to.have.length(0);
+
+    });
+
+    it('Should replace footer row', function () {
+        var columns = [
+            {
+                id: 'a',
+                parser: function (id, value) {
+                    return value;
+                },
+                formatter: function (id, value) {
+                    return value;
+                }
+            }
+        ];
+        var newRow = $('<div><table class="booty-footer-table">' +
+            '<tr class="new-row"><td data-col-id="a">' +
+            '<input/>' +
+            '</td></tr></table></div>');
+
+        var options = {
+            columns: columns,
+            el: newRow,
+            rows: {
+                newRowData: function (currentData) {
+                    return currentData;
+                }
+            }
+        };
+        var ears = new Ears();
+        var grid = {
+            ears: ears
+        };
+        var utils = gridUtils.call(grid, options);
+        utils._replaceFooterRow();
+        expect(options.el.html())
+            .to.equal('<table class="booty-footer-table">' +
+                '<tr class="new-row">' +
+                '<td class="" data-col-id="a" style="width:undefined">' +
+                '<input type="text" class="form-control" value="" />' +
+                '</td>' +
+                '</tr>' +
+                '</table>');
+
+        var input = options.el.find('input');
+        input.val('a');
+        // make sure the value is retained when the row is replaced
+        utils._replaceFooterRow();
+        expect(options.el.html())
+            .to.equal('<table class="booty-footer-table">' +
+                '<tr class="new-row">' +
+                '<td class="" data-col-id="a" style="width:undefined">' +
+                '<input type="text" class="form-control" value="a" />' +
+                '</td>' +
+                '</tr>' +
+                '</table>');
+
 
     });
 });

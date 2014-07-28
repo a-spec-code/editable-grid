@@ -20,7 +20,7 @@ describe('Grid Listeners', function () {
             '</div><td data-col-id="col-a"><input id="input"/></td>' +
             '<td data-col-id="col-b"><select><option value="a">A</option> ' +
             '<option value="b">B</option></select></td>' +
-            '<td data-col-id="col-c">><input id="checkbox" type="checkbox"/></td>'+
+            '<td data-col-id="col-c">><input id="checkbox" type="checkbox"/></td>' +
             '</tr></tbody>' +
             '</table></div>');
         this.footerContainer = $('<div><table>' +
@@ -43,6 +43,7 @@ describe('Grid Listeners', function () {
             _rowClicked: function () {
             },
             _validate: function () {
+                return true;
             },
             _validateRow: function () {
             },
@@ -90,17 +91,19 @@ describe('Grid Listeners', function () {
     });
 
     it('Should listen for a change event on a new row item', function () {
-        var spy = this.sandbox.spy(this.grid, '_newRowChanged');
+        var spy = this.sandbox.spy(this.grid, '_newRowChanged'),
+            spyValidate = this.sandbox.spy(this.grid, '_validate');
 
         expect(spy.callCount).to.equal(0);
+        expect(spyValidate.callCount).to.equal(0);
 
         var input = this.footerContainer.find('input');
         input.val('b');
         input.trigger('change');
 
         expect(spy.callCount).to.equal(1);
+        expect(spyValidate.callCount).to.equal(1);
         expect(spy.args[0][0]).to.equal('col-a');
-
 
         var select = this.footerContainer.find('select');
         select.val('b').trigger('change');
@@ -176,20 +179,6 @@ describe('Grid Listeners', function () {
 
         expect(spy.callCount).to.equal(1);
         expect(spy.args[0][0]).to.equal('row-id');
-        expect(spy.args[0][1]).to.equal('col-a');
-        expect(spy.args[0][2].is('input')).to.be.true;
-    });
-
-    it('Should call inputBlur for a footer input', function () {
-        var spy = this.sandbox.spy(this.grid, '_validate');
-
-        expect(spy.callCount).to.equal(0);
-
-        var cell = this.footerContainer.find('td').eq(0).find('input');
-        cell.trigger('blur');
-
-        expect(spy.callCount).to.equal(1);
-        expect(spy.args[0][0]).to.equal('new-row');
         expect(spy.args[0][1]).to.equal('col-a');
         expect(spy.args[0][2].is('input')).to.be.true;
     });

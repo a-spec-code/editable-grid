@@ -3,6 +3,7 @@ var $ = require('jquery'),
     _ = require('underscore'),
     expect = require('chai').expect,
     Grid = require('grid'),
+    rowFactory = require('rowFactory'),
     sinon = require('sinon');
 
 describe('Grid', function () {
@@ -47,9 +48,14 @@ describe('Grid', function () {
             data: this.data,
             rows: {
                 newRow: true,
-                totalRow: true
+                totalRow: true,
+                newRowData: function () {
+                    return 'foo';
+                }
             }
         });
+        this.createTableFooterAddRowSpy = this.sandbox.spy(rowFactory, 'createTableFooterAddRow');
+
         this.grid.render();
     });
 
@@ -110,6 +116,10 @@ describe('Grid', function () {
     });
 
     it('Should make new row footer', function () {
+        expect(this.createTableFooterAddRowSpy.callCount).to.equal(1);
+        var options = this.createTableFooterAddRowSpy.args[0][0];
+        expect(options.columns).to.have.length(3);
+        expect(options.data).to.equal('foo');
         var table = this.el.find('.booty-footer-table table');
         expect(table.find('thead').children()).to.have.length(0);
         expect(table.find('tbody').children()).to.have.length(0);
@@ -165,7 +175,6 @@ describe('Grid', function () {
         expect(_.has(options.columns[0], 'link')).to.be.false;
         expect(_.has(options.columns[0], 'parser')).to.be.false;
         expect(_.has(options.columns[0], 'validate')).to.be.false;
-        expect(_.has(options.columns[0], 'preCreateCallback')).to.be.false;
         expect(_.has(options.columns[0], 'alignment')).to.be.false;
 
         new Grid(options);
@@ -175,7 +184,6 @@ describe('Grid', function () {
         expect(options.columns[0].type).to.equal('text');
         expect(options.columns[0].link).to.be.null;
         expect(_.isFunction(options.columns[0].parser)).to.be.true;
-        expect(_.isFunction(options.columns[0].preCreateCallback)).to.be.true;
         expect(options.columns[0].validate()).to.equal('');
         expect(options.columns[0].nullable).to.be.false;
         expect(options.columns[0].alignment).to.equal('left');
@@ -197,6 +205,7 @@ describe('Grid', function () {
         expect(options.rows.link).to.be.false;
         expect(options.rows.newRow).to.be.false;
         expect(options.rows.totalRow).to.be.false;
+        expect(options.rows.newRowData('a')).to.equal('a');
         expect(_.result(options.stateManager, 'isEditable')).to.be.false;
         expect(_.has(options, 'addListeners')).to.be.true;
 

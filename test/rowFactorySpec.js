@@ -219,7 +219,8 @@ describe('Row Factory', function () {
     });
 
     it('Should create a footer row for entry', function () {
-        var preCreateCallback = function () {
+        var formatter = function (id, value) {
+            return value;
         };
         var columns = [
             {
@@ -227,27 +228,25 @@ describe('Row Factory', function () {
                 type: 'string',
                 width: '20%',
                 link: 'link-id',
-                preCreateCallback: preCreateCallback
+                formatter: formatter
             },
             {
                 id: 'date',
                 type: 'date',
                 width: '20%',
-                preCreateCallback: preCreateCallback
+                formatter: formatter
             },
             {
                 id: 'cost',
                 type: 'cost',
                 width: '20%',
-                preCreateCallback: preCreateCallback
+                formatter: formatter
             },
             {
                 id: 'percent',
                 type: 'percent',
                 width: '20%',
-                preCreateCallback: function () {
-                    return 6;
-                }
+                formatter: formatter
             },
             {
                 id: 'select',
@@ -264,10 +263,7 @@ describe('Row Factory', function () {
                     }
                     return value;
                 },
-                width: '20%',
-                preCreateCallback: function () {
-                    return 'c';
-                }
+                width: '20%'
             }
         ];
         var row = rowFactory.createTableFooterAddRow({columns: columns});
@@ -290,7 +286,7 @@ describe('Row Factory', function () {
                 '</td>' +
                 '<td class="" data-col-id="percent" style="width:20%">' +
                 '<div class="input-group">' +
-                '<input type="text" class="form-control" value="6"/>' +
+                '<input type="text" class="form-control"/>' +
                 '<span class="input-group-addon">%</span>' +
                 '</div>' +
                 '</td>' +
@@ -298,7 +294,7 @@ describe('Row Factory', function () {
                 '<select class="form-control">' +
                 '<option value="a">A</option>' +
                 '<option value="b">B</option>' +
-                '<option value="c" selected="selected">C</option>' +
+                '<option value="c">C</option>' +
                 '</select>' +
                 '</td>' +
                 '</tr>'

@@ -70,7 +70,12 @@ var grid = new Grid({
         // turn to true for an add row to appear in footer
         newRow: false,
         // turn to true to see an total row appear (only applicable to cost columns)                                          
-        totalRow: false                                 
+        totalRow: false,
+        // called when rendering the new row column
+        // every time a value is changed this will be called
+        newRowData: function (currentData) {
+            return currentData;
+        }
     },
     // pre sort the grid when rendered
     sortConfig: [                                       
@@ -119,14 +124,9 @@ var grid = new Grid({
             // type of data in the column, 
             // options are 'text', 'cost', 'percent', 'select', 'date', 'checkbox'
             type: 'text',                               
-            // values for a select type column, 
+            // values for a select type column, can also be a function return a list
             // use formatter to format to the selected value            
-            list: ['a', 'b', 'c'],                      
-            // advanced functionality - see demos for example
-            preCreateCallback: function() {             
-                // called before cell is created
-                // return cell value
-            }
+            list: ['a', 'b', 'c']
         }
     ],
     // data to be rendered to grid
