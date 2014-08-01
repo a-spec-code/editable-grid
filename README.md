@@ -62,8 +62,10 @@ var Grid = require('booty-grid'),
 datepicker();                                           
 
 var grid = new Grid({
-    // property name for column id
-    id: 'id',                                           
+    // event namespace name, will prefix booty.
+    eventNamespace: 'booty',
+    // property name for the id of the record
+    recordIdName: 'id',                                           
     rows: {
         // turn to true for clickable rows
         link: false,
@@ -142,10 +144,11 @@ var grid = new Grid({
 grid.render();      
 
 // things to listen for
-grid.on('booty-value-updated', function(params) {});
+grid.on('record-added', function(record) {});
+grid.on('record-deleted', function(record) {});
+grid.on('record-updated', function({record, recordId, propertyName, value}) {});
+
 grid.on('booty-new-row-value-changed', function(newObj, colId) {});
-grid.on('booty-record-added', function(record) {});
-grid.on('booty-record-deleted', function(record) {});
 grid.on('booty-row-clicked', function(params) {});
 
 

@@ -30,7 +30,7 @@ describe('State Manager', function () {
             }
         ];
         this.options = {
-            id: 'id'
+            recordIdName: 'id'
         };
         this.ears = new Ears();
         this.stateManager = new StateManager(this.data, this.ears, this.options);
@@ -60,7 +60,7 @@ describe('State Manager', function () {
                 name: 'bar'
             }
         ], this.ears, {
-            id: 'key'
+            recordIdName: 'key'
         });
 
         expect(this.stateManager.getRecord('a').name).to.equal('foo');

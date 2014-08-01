@@ -18,7 +18,7 @@ describe('Grid Utils', function () {
                 'col-a': 'c'
             }
         ], this.ears, {
-            id: 'id'
+            recordIdName: 'id'
         });
         this.sandbox = sinon.sandbox.create();
     });
