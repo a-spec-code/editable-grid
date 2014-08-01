@@ -563,27 +563,20 @@ describe('Grid Utils', function () {
             el: el,
             data: data
         };
-        var ears = new Ears();
         var grid = {
-            ears: ears,
             bodyTable: el
         };
-        var utils = gridUtils.call(grid, options);
+        this.stateManager._data = options.data;
+        var utils = gridUtils.call(grid, options, this.stateManager);
+        var deleteRecordSpy = this.sandbox.spy(this.stateManager, 'deleteRecord');
 
-        ears.on('booty-can-delete', function () {
-            return true;
-        });
-
-        expect(data).to.have.length(3);
+        expect(deleteRecordSpy.callCount).to.equal(0);
         expect(el.find('tr')).to.have.length(3);
         expect(el.find('tr[data-row-id="2"]')).to.have.length(1);
 
         utils._deleteRow('2');
 
-        expect(data).to.have.length(2);
-        expect(data[0].id).to.equal('1');
-        expect(data[1].id).to.equal('3');
-
+        expect(deleteRecordSpy.callCount).to.equal(1);
         expect(el.find('tr')).to.have.length(2);
         expect(el.find('tr[data-row-id="2"]')).to.have.length(0);
 

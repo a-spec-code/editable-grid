@@ -144,9 +144,9 @@ grid.render();
 // things to listen for
 grid.on('booty-value-updated', function(params) {});
 grid.on('booty-new-row-value-changed', function(newObj, colId) {});
-grid.on('booty-new-record', function(newObj) {});
+grid.on('booty-record-added', function(record) {});
+grid.on('booty-record-deleted', function(record) {});
 grid.on('booty-row-clicked', function(params) {});
-grid.on('booty-can-delete', function(rowId) {});
 
 
 // things to trigger

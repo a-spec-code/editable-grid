@@ -83,7 +83,7 @@ describe('State Manager', function () {
     it('Should set a value for a given property name', function () {
 
         var callback = this.sandbox.spy();
-        this.ears.on('value-updated', callback);
+        this.ears.on('record-updated', callback);
 
         expect(callback.callCount).to.equal(0);
 
@@ -118,7 +118,7 @@ describe('State Manager', function () {
 
     it('Should add record to record set', function () {
         var callback = this.sandbox.spy();
-        this.ears.on('new-record', callback);
+        this.ears.on('record-added', callback);
 
         expect(callback.callCount).to.equal(0);
 
@@ -142,6 +142,11 @@ describe('State Manager', function () {
     });
 
     it('Should delete record from record set with a given id', function () {
+        var callback = this.sandbox.spy();
+        this.ears.on('record-deleted', callback);
+
+        expect(callback.callCount).to.equal(0);
+
         expect(this.stateManager.getRecords()).to.have.length(3);
         expect(this.stateManager.getRecords()[0].id).to.equal('1');
         expect(this.stateManager.getRecords()[1].id).to.equal('2');
@@ -153,19 +158,24 @@ describe('State Manager', function () {
         this.stateManager.deleteRecord('1');
         expect(this.stateManager.getRecords()).to.have.length(1);
         expect(this.stateManager.getRecords()[0].id).to.equal('3');
+        var recordToDelete = this.stateManager.getRecord('3');
         this.stateManager.deleteRecord('3');
         expect(this.stateManager.getRecords()).to.have.length(0);
+
+        expect(callback.callCount).to.equal(3);
+        expect(callback.args[2][0]).to.equal(recordToDelete);
     });
 
     it('Should return a set of attributes determining the state of the record', function () {
         var record = this.stateManager.getRecord('2');
-        var attributes = this.stateManager.attributes(record);
-        expect(_.keys(attributes)).to.have.length(2);
+        var attributes = this.stateManager.getRecordAttributes(record);
+        expect(_.keys(attributes)).to.have.length(3);
         expect(attributes.areEditableValues).to.have.length(0);
+        expect(attributes.canDelete).to.be.true;
         expect(attributes.isNew).to.be.false;
 
         record.id = '-1';
-        attributes = this.stateManager.attributes(record);
+        attributes = this.stateManager.getRecordAttributes(record);
         expect(attributes.isNew).to.be.true;
 
     });
