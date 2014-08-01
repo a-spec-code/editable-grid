@@ -382,28 +382,22 @@ describe('Grid Utils', function () {
                         return value;
                     }
                 }
-            ],
-            data: [
-                {
-                    id: 'row-id',
-                    'col-a': 'c'
-                }
             ]
         };
         var grid = {
             ears: new Ears()
         };
-        var utils = gridUtils.call(grid, options);
+        var utils = gridUtils.call(grid, options, this.stateManager);
         var callback = this.sandbox.spy();
-        grid.ears.on('booty-row-clicked', callback);
+        grid.ears.on('row-clicked', callback);
 
         expect(callback.callCount).to.equal(0);
-        expect(options.data[0]['col-a']).to.equal('c');
+        expect(this.stateManager.getRecords()[0]['col-a']).to.equal('c');
         utils._rowClicked('row-id', 'col-a');
         expect(callback.callCount).to.equal(1);
-        expect(callback.args[0][0].obj.id).to.equal('row-id');
-        expect(callback.args[0][0].rowId).to.equal('row-id');
-        expect(callback.args[0][0].colId).to.equal('col-a');
+        expect(callback.args[0][0].record.id).to.equal('row-id');
+        expect(callback.args[0][0].recordId).to.equal('row-id');
+        expect(callback.args[0][0].propertyName).to.equal('col-a');
 
     });
 
