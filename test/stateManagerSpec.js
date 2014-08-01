@@ -1,10 +1,13 @@
 var _ = require('underscore'),
     expect = require('chai').expect,
-    StateManager = require('stateManager');
+    StateManager = require('stateManager'),
+    Ears = require('elephant-ears'),
+    sinon = require('sinon');
 
 describe('State Manager', function () {
 
     beforeEach(function () {
+        this.sandbox = sinon.sandbox.create();
         this.data = [
             {
                 id: '1',
@@ -29,10 +32,12 @@ describe('State Manager', function () {
         this.options = {
             id: 'id'
         };
-        this.stateManager = new StateManager(this.data, this.options);
+        this.ears = new Ears();
+        this.stateManager = new StateManager(this.data, this.ears, this.options);
     });
 
     afterEach(function () {
+        this.sandbox.restore();
         delete this.stateManager;
     });
 
@@ -54,7 +59,7 @@ describe('State Manager', function () {
                 key: 'b',
                 name: 'bar'
             }
-        ], {
+        ], this.ears, {
             id: 'key'
         });
 
@@ -71,30 +76,43 @@ describe('State Manager', function () {
 
     it('Should give a value for a given property name', function () {
         var record = this.stateManager.getRecord('1');
-        expect(this.stateManager.getValue(record, 'name')).to.equal('a');
-        expect(this.stateManager.getValue(record, 'bar.foo.deep')).to.equal('deep value');
+        expect(this.stateManager.getRecordValue(record, 'name')).to.equal('a');
+        expect(this.stateManager.getRecordValue(record, 'bar.foo.deep')).to.equal('deep value');
     });
 
     it('Should set a value for a given property name', function () {
+
+        var callback = this.sandbox.spy();
+        this.ears.on('value-updated', callback);
+
+        expect(callback.callCount).to.equal(0);
+
         var record = this.stateManager.getRecord('1');
-        expect(this.stateManager.getValue(record, 'name')).to.equal('a');
-        this.stateManager.setValue(record, 'name', 'aaa');
-        expect(this.stateManager.getValue(record, 'name')).to.equal('aaa');
+        expect(this.stateManager.getRecordValue(record, 'name')).to.equal('a');
+        this.stateManager.setRecordValue(record, 'name', 'aaa');
+        expect(this.stateManager.getRecordValue(record, 'name')).to.equal('aaa');
 
         // deep set
-        expect(this.stateManager.getValue(record, 'bar.foo.deep')).to.equal('deep value');
-        this.stateManager.setValue(record, 'bar.foo.deep', 'hello');
-        expect(this.stateManager.getValue(record, 'bar.foo.deep')).to.equal('hello');
+        expect(this.stateManager.getRecordValue(record, 'bar.foo.deep')).to.equal('deep value');
+        this.stateManager.setRecordValue(record, 'bar.foo.deep', 'hello');
+        expect(this.stateManager.getRecordValue(record, 'bar.foo.deep')).to.equal('hello');
 
         // set a value on a property name that does not exist
-        expect(this.stateManager.getValue(record, 'z')).to.be.null;
-        this.stateManager.setValue(record, 'z', 'hello world');
-        expect(this.stateManager.getValue(record, 'z')).to.be.equal('hello world');
+        expect(this.stateManager.getRecordValue(record, 'z')).to.be.null;
+        this.stateManager.setRecordValue(record, 'z', 'hello world');
+        expect(this.stateManager.getRecordValue(record, 'z')).to.be.equal('hello world');
 
         // set a deep value on a property name that does not exist
-        expect(this.stateManager.getValue(record, 'm.n.o')).to.be.null;
-        this.stateManager.setValue(record, 'm.n.o', 'world');
-        expect(this.stateManager.getValue(record, 'm.n.o')).to.be.equal('world');
+        expect(this.stateManager.getRecordValue(record, 'm.n.o')).to.be.null;
+        this.stateManager.setRecordValue(record, 'm.n.o', 'world');
+        expect(this.stateManager.getRecordValue(record, 'm.n.o')).to.be.equal('world');
+
+        expect(callback.callCount).to.equal(4);
+        var params = callback.args[0][0];
+        expect(params.record.name).to.equal('aaa');
+        expect(params.recordId).to.equal('1');
+        expect(params.propertyName).to.equal('name');
+        expect(params.value).to.equal('aaa');
 
     });
 

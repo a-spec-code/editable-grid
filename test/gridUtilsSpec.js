@@ -4,12 +4,22 @@ var _ = require('underscore'),
     expect = require('chai').expect,
     gridUtils = require('gridUtils'),
     sinon = require('sinon'),
-    Ears = require('elephant-ears');
+    Ears = require('elephant-ears'),
+    StateManager = require('stateManager');
 
 
 describe('Grid Utils', function () {
 
     beforeEach(function () {
+        this.ears = new Ears();
+        this.stateManager = new StateManager([
+            {
+                id: 'row-id',
+                'col-a': 'c'
+            }
+        ], this.ears, {
+            id: 'id'
+        });
         this.sandbox = sinon.sandbox.create();
     });
 
@@ -251,44 +261,26 @@ describe('Grid Utils', function () {
                         return value;
                     }
                 }
-            ],
-            data: [
-                {
-                    id: 'row-id',
-                    'col-a': 'c'
-                }
             ]
         };
         var grid = {
-            ears: new Ears(),
             render: function () {
 
             }
         };
 
-        var utils = gridUtils.call(grid, options);
-        var callback = this.sandbox.spy();
-        grid.ears.on('booty-value-updated', callback);
+        var utils = gridUtils.call(grid, options, this.stateManager);
 
-        expect(callback.callCount).to.equal(0);
-        expect(options.data[0]['col-a']).to.equal('c');
+        expect(this.stateManager.getRecords()[0]['col-a']).to.equal('c');
         utils._valueChanged('row-id', 'col-a', 'b');
-        expect(options.data[0]['col-a']).to.equal('ab');
-        expect(callback.callCount).to.equal(1);
-        expect(callback.args[0][0].colId).to.equal('col-a');
-        expect(callback.args[0][0].rowId).to.equal('row-id');
-        expect(callback.args[0][0].value).to.equal('ab');
+        expect(this.stateManager.getRecords()[0]['col-a']).to.equal('ab');
         var input = options.el.find('input').eq(0);
         expect(input.val()).to.equal('ab');
 
 
-        expect(options.data[0].nested).to.be.undefined;
+        expect(this.stateManager.getRecords()[0].nested).to.be.undefined;
         utils._valueChanged('row-id', 'nested.foo', 'bar');
-        expect(options.data[0].nested.foo).to.equal('bar');
-        expect(callback.callCount).to.equal(2);
-        expect(callback.args[1][0].colId).to.equal('nested.foo');
-        expect(callback.args[1][0].rowId).to.equal('row-id');
-        expect(callback.args[1][0].value).to.equal('bar');
+        expect(this.stateManager.getRecords()[0].nested.foo).to.equal('bar');
         input = options.el.find('input').eq(1);
         expect(input.val()).to.equal('bar');
     });
