@@ -185,20 +185,22 @@ describe('Grid', function () {
         var options = {};
 
         expect(_.has(options, 'sortConfig')).to.be.false;
-        expect(_.has(options, 'id')).to.be.false;
+        expect(_.has(options, 'recordIdName')).to.be.false;
         expect(_.has(options, 'rows')).to.be.false;
         expect(_.has(options, 'stateManager')).to.be.false;
         expect(_.has(options, 'addListeners')).to.be.false;
+        expect(_.has(options, 'eventNamespace')).to.be.false;
 
         new Grid(options);
 
         expect(options.sortConfig).to.have.length(0);
-        expect(options.id).to.equal('id');
+        expect(options.recordIdName).to.equal('id');
         expect(options.rows.link).to.be.false;
         expect(options.rows.newRow).to.be.false;
         expect(options.rows.totalRow).to.be.false;
         expect(_.result(options.stateManager, 'isEditable')).to.be.false;
         expect(_.has(options, 'addListeners')).to.be.true;
+        expect(options.eventNamespace).to.equal('booty');
 
     });
 
@@ -328,12 +330,12 @@ describe('Grid', function () {
         expect(this.el.find('.row-delete')).to.have.length(0);
 
         // activate delete buttons
-        grid.trigger('booty-delete-mode', true);
+        grid.trigger('delete-mode', true);
 
         expect(this.el.find('.row-delete')).to.have.length(2);
 
         // deactivate delete buttons
-        grid.trigger('booty-delete-mode', false);
+        grid.trigger('delete-mode', false);
 
         expect(this.el.find('.row-delete')).to.have.length(0);
 

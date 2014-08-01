@@ -1,10 +1,13 @@
 var _ = require('underscore'),
     expect = require('chai').expect,
-    StateManager = require('stateManager');
+    StateManager = require('stateManager'),
+    Ears = require('elephant-ears'),
+    sinon = require('sinon');
 
 describe('State Manager', function () {
 
     beforeEach(function () {
+        this.sandbox = sinon.sandbox.create();
         this.data = [
             {
                 id: '1',
@@ -27,12 +30,14 @@ describe('State Manager', function () {
             }
         ];
         this.options = {
-            id: 'id'
+            recordIdName: 'id'
         };
-        this.stateManager = new StateManager(this.data, this.options);
+        this.ears = new Ears();
+        this.stateManager = new StateManager(this.data, this.ears, this.options);
     });
 
     afterEach(function () {
+        this.sandbox.restore();
         delete this.stateManager;
     });
 
@@ -54,8 +59,8 @@ describe('State Manager', function () {
                 key: 'b',
                 name: 'bar'
             }
-        ], {
-            id: 'key'
+        ], this.ears, {
+            recordIdName: 'key'
         });
 
         expect(this.stateManager.getRecord('a').name).to.equal('foo');
@@ -71,34 +76,52 @@ describe('State Manager', function () {
 
     it('Should give a value for a given property name', function () {
         var record = this.stateManager.getRecord('1');
-        expect(this.stateManager.getValue(record, 'name')).to.equal('a');
-        expect(this.stateManager.getValue(record, 'bar.foo.deep')).to.equal('deep value');
+        expect(this.stateManager.getRecordValue(record, 'name')).to.equal('a');
+        expect(this.stateManager.getRecordValue(record, 'bar.foo.deep')).to.equal('deep value');
     });
 
     it('Should set a value for a given property name', function () {
+
+        var callback = this.sandbox.spy();
+        this.ears.on('record-updated', callback);
+
+        expect(callback.callCount).to.equal(0);
+
         var record = this.stateManager.getRecord('1');
-        expect(this.stateManager.getValue(record, 'name')).to.equal('a');
-        this.stateManager.setValue(record, 'name', 'aaa');
-        expect(this.stateManager.getValue(record, 'name')).to.equal('aaa');
+        expect(this.stateManager.getRecordValue(record, 'name')).to.equal('a');
+        this.stateManager.setRecordValue(record, 'name', 'aaa');
+        expect(this.stateManager.getRecordValue(record, 'name')).to.equal('aaa');
 
         // deep set
-        expect(this.stateManager.getValue(record, 'bar.foo.deep')).to.equal('deep value');
-        this.stateManager.setValue(record, 'bar.foo.deep', 'hello');
-        expect(this.stateManager.getValue(record, 'bar.foo.deep')).to.equal('hello');
+        expect(this.stateManager.getRecordValue(record, 'bar.foo.deep')).to.equal('deep value');
+        this.stateManager.setRecordValue(record, 'bar.foo.deep', 'hello');
+        expect(this.stateManager.getRecordValue(record, 'bar.foo.deep')).to.equal('hello');
 
         // set a value on a property name that does not exist
-        expect(this.stateManager.getValue(record, 'z')).to.be.null;
-        this.stateManager.setValue(record, 'z', 'hello world');
-        expect(this.stateManager.getValue(record, 'z')).to.be.equal('hello world');
+        expect(this.stateManager.getRecordValue(record, 'z')).to.be.null;
+        this.stateManager.setRecordValue(record, 'z', 'hello world');
+        expect(this.stateManager.getRecordValue(record, 'z')).to.be.equal('hello world');
 
         // set a deep value on a property name that does not exist
-        expect(this.stateManager.getValue(record, 'm.n.o')).to.be.null;
-        this.stateManager.setValue(record, 'm.n.o', 'world');
-        expect(this.stateManager.getValue(record, 'm.n.o')).to.be.equal('world');
+        expect(this.stateManager.getRecordValue(record, 'm.n.o')).to.be.null;
+        this.stateManager.setRecordValue(record, 'm.n.o', 'world');
+        expect(this.stateManager.getRecordValue(record, 'm.n.o')).to.be.equal('world');
+
+        expect(callback.callCount).to.equal(4);
+        var params = callback.args[0][0];
+        expect(params.record.name).to.equal('aaa');
+        expect(params.recordId).to.equal('1');
+        expect(params.propertyName).to.equal('name');
+        expect(params.value).to.equal('aaa');
 
     });
 
     it('Should add record to record set', function () {
+        var callback = this.sandbox.spy();
+        this.ears.on('record-added', callback);
+
+        expect(callback.callCount).to.equal(0);
+
         expect(this.stateManager.getRecords()).to.have.length(3);
         var newRecord = this.stateManager.addRecord({name: 'new record 1'});
         expect(newRecord.id).to.equal('-1');
@@ -113,9 +136,17 @@ describe('State Manager', function () {
         expect(this.stateManager.getRecords()[3].id).to.equal('3');
         expect(this.stateManager.getRecords()[4].id).to.equal('-1');
 
+        expect(callback.callCount).to.equal(2);
+        expect(callback.args[1][0]).to.equal(newRecord);
+
     });
 
     it('Should delete record from record set with a given id', function () {
+        var callback = this.sandbox.spy();
+        this.ears.on('record-deleted', callback);
+
+        expect(callback.callCount).to.equal(0);
+
         expect(this.stateManager.getRecords()).to.have.length(3);
         expect(this.stateManager.getRecords()[0].id).to.equal('1');
         expect(this.stateManager.getRecords()[1].id).to.equal('2');
@@ -127,19 +158,24 @@ describe('State Manager', function () {
         this.stateManager.deleteRecord('1');
         expect(this.stateManager.getRecords()).to.have.length(1);
         expect(this.stateManager.getRecords()[0].id).to.equal('3');
+        var recordToDelete = this.stateManager.getRecord('3');
         this.stateManager.deleteRecord('3');
         expect(this.stateManager.getRecords()).to.have.length(0);
+
+        expect(callback.callCount).to.equal(3);
+        expect(callback.args[2][0]).to.equal(recordToDelete);
     });
 
     it('Should return a set of attributes determining the state of the record', function () {
         var record = this.stateManager.getRecord('2');
-        var attributes = this.stateManager.attributes(record);
-        expect(_.keys(attributes)).to.have.length(2);
+        var attributes = this.stateManager.getRecordAttributes(record);
+        expect(_.keys(attributes)).to.have.length(3);
         expect(attributes.areEditableValues).to.have.length(0);
+        expect(attributes.canDelete).to.be.true;
         expect(attributes.isNew).to.be.false;
 
         record.id = '-1';
-        attributes = this.stateManager.attributes(record);
+        attributes = this.stateManager.getRecordAttributes(record);
         expect(attributes.isNew).to.be.true;
 
     });

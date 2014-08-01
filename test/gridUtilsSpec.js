@@ -4,12 +4,22 @@ var _ = require('underscore'),
     expect = require('chai').expect,
     gridUtils = require('gridUtils'),
     sinon = require('sinon'),
-    Ears = require('elephant-ears');
+    Ears = require('elephant-ears'),
+    StateManager = require('stateManager');
 
 
 describe('Grid Utils', function () {
 
     beforeEach(function () {
+        this.ears = new Ears();
+        this.stateManager = new StateManager([
+            {
+                id: 'row-id',
+                'col-a': 'c'
+            }
+        ], this.ears, {
+            recordIdName: 'id'
+        });
         this.sandbox = sinon.sandbox.create();
     });
 
@@ -196,36 +206,30 @@ describe('Grid Utils', function () {
         };
         var grid = {
             data: data,
-            dataOrder: _.clone(data),
             render: function () {
             },
             ears: new Ears()
         };
-        var utils = gridUtils.call(grid, options);
+        var utils = gridUtils.call(grid, options, this.stateManager);
 
-        var spy = this.sandbox.spy(grid, 'render'),
-            callback = this.sandbox.spy();
+        var renderSpy = this.sandbox.spy(grid, 'render'),
+            addRecordSpy = this.sandbox.spy(this.stateManager, 'addRecord');
 
-        grid.ears.on('booty-new-row', callback);
+        expect(renderSpy.callCount).to.equal(0);
+        expect(addRecordSpy.callCount).to.equal(0);
 
-        expect(spy.callCount).to.equal(0);
-        expect(options.data).to.have.length(0);
-        expect(grid.dataOrder).to.have.length(0);
-        expect(callback.callCount).to.equal(0);
         utils._newRowClicked();
 
-        expect(spy.callCount).to.equal(1);
-        expect(options.data).to.have.length(1);
-        expect(grid.dataOrder).to.have.length(1);
-        expect(options.data[0].id).to.equal('-1');
-        expect(options.data[0].string).to.equal('hello');
-        expect(options.data[0].cost).to.equal(500.36);
-        expect(options.data[0].percent).to.equal(0.455);
-        expect(options.data[0].date).to.equal('2014-01-01');
-        expect(options.data[0].select).to.equal('a');
+        expect(renderSpy.callCount).to.equal(1);
+        expect(addRecordSpy.callCount).to.equal(1);
+        var newRecord = addRecordSpy.args[0][0];
+        expect(newRecord.id).to.equal('-1');
+        expect(newRecord.string).to.equal('hello');
+        expect(newRecord.cost).to.equal(500.36);
+        expect(newRecord.percent).to.equal(0.455);
+        expect(newRecord.date).to.equal('2014-01-01');
+        expect(newRecord.select).to.equal('a');
 
-        expect(callback.callCount).to.equal(1);
-        expect(callback.args[0][0].id).to.equal('-1');
     });
 
     it('Should update the data on an input change event', function () {
@@ -254,44 +258,26 @@ describe('Grid Utils', function () {
                         return value;
                     }
                 }
-            ],
-            data: [
-                {
-                    id: 'row-id',
-                    'col-a': 'c'
-                }
             ]
         };
         var grid = {
-            ears: new Ears(),
             render: function () {
 
             }
         };
 
-        var utils = gridUtils.call(grid, options);
-        var callback = this.sandbox.spy();
-        grid.ears.on('booty-value-updated', callback);
+        var utils = gridUtils.call(grid, options, this.stateManager);
 
-        expect(callback.callCount).to.equal(0);
-        expect(options.data[0]['col-a']).to.equal('c');
+        expect(this.stateManager.getRecords()[0]['col-a']).to.equal('c');
         utils._valueChanged('row-id', 'col-a', 'b');
-        expect(options.data[0]['col-a']).to.equal('ab');
-        expect(callback.callCount).to.equal(1);
-        expect(callback.args[0][0].colId).to.equal('col-a');
-        expect(callback.args[0][0].rowId).to.equal('row-id');
-        expect(callback.args[0][0].value).to.equal('ab');
+        expect(this.stateManager.getRecords()[0]['col-a']).to.equal('ab');
         var input = options.el.find('input').eq(0);
         expect(input.val()).to.equal('ab');
 
 
-        expect(options.data[0].nested).to.be.undefined;
+        expect(this.stateManager.getRecords()[0].nested).to.be.undefined;
         utils._valueChanged('row-id', 'nested.foo', 'bar');
-        expect(options.data[0].nested.foo).to.equal('bar');
-        expect(callback.callCount).to.equal(2);
-        expect(callback.args[1][0].colId).to.equal('nested.foo');
-        expect(callback.args[1][0].rowId).to.equal('row-id');
-        expect(callback.args[1][0].value).to.equal('bar');
+        expect(this.stateManager.getRecords()[0].nested.foo).to.equal('bar');
         input = options.el.find('input').eq(1);
         expect(input.val()).to.equal('bar');
     });
@@ -396,28 +382,22 @@ describe('Grid Utils', function () {
                         return value;
                     }
                 }
-            ],
-            data: [
-                {
-                    id: 'row-id',
-                    'col-a': 'c'
-                }
             ]
         };
         var grid = {
             ears: new Ears()
         };
-        var utils = gridUtils.call(grid, options);
+        var utils = gridUtils.call(grid, options, this.stateManager);
         var callback = this.sandbox.spy();
-        grid.ears.on('booty-row-clicked', callback);
+        grid.ears.on('row-clicked', callback);
 
         expect(callback.callCount).to.equal(0);
-        expect(options.data[0]['col-a']).to.equal('c');
+        expect(this.stateManager.getRecords()[0]['col-a']).to.equal('c');
         utils._rowClicked('row-id', 'col-a');
         expect(callback.callCount).to.equal(1);
-        expect(callback.args[0][0].obj.id).to.equal('row-id');
-        expect(callback.args[0][0].rowId).to.equal('row-id');
-        expect(callback.args[0][0].colId).to.equal('col-a');
+        expect(callback.args[0][0].record.id).to.equal('row-id');
+        expect(callback.args[0][0].recordId).to.equal('row-id');
+        expect(callback.args[0][0].propertyName).to.equal('col-a');
 
     });
 
@@ -583,27 +563,20 @@ describe('Grid Utils', function () {
             el: el,
             data: data
         };
-        var ears = new Ears();
         var grid = {
-            ears: ears,
             bodyTable: el
         };
-        var utils = gridUtils.call(grid, options);
+        this.stateManager._data = options.data;
+        var utils = gridUtils.call(grid, options, this.stateManager);
+        var deleteRecordSpy = this.sandbox.spy(this.stateManager, 'deleteRecord');
 
-        ears.on('booty-can-delete', function () {
-            return true;
-        });
-
-        expect(data).to.have.length(3);
+        expect(deleteRecordSpy.callCount).to.equal(0);
         expect(el.find('tr')).to.have.length(3);
         expect(el.find('tr[data-row-id="2"]')).to.have.length(1);
 
         utils._deleteRow('2');
 
-        expect(data).to.have.length(2);
-        expect(data[0].id).to.equal('1');
-        expect(data[1].id).to.equal('3');
-
+        expect(deleteRecordSpy.callCount).to.equal(1);
         expect(el.find('tr')).to.have.length(2);
         expect(el.find('tr[data-row-id="2"]')).to.have.length(0);
 
