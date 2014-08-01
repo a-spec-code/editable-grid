@@ -196,7 +196,6 @@ describe('Grid Utils', function () {
         };
         var grid = {
             data: data,
-            dataOrder: _.clone(data),
             render: function () {
             },
             ears: new Ears()
@@ -210,13 +209,11 @@ describe('Grid Utils', function () {
 
         expect(spy.callCount).to.equal(0);
         expect(options.data).to.have.length(0);
-        expect(grid.dataOrder).to.have.length(0);
         expect(callback.callCount).to.equal(0);
         utils._newRowClicked();
 
         expect(spy.callCount).to.equal(1);
         expect(options.data).to.have.length(1);
-        expect(grid.dataOrder).to.have.length(1);
         expect(options.data[0].id).to.equal('-1');
         expect(options.data[0].string).to.equal('hello');
         expect(options.data[0].cost).to.equal(500.36);
