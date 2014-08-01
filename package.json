@@ -22,7 +22,7 @@
     "dependencies": {
         "underscore": "^1.6.0",
         "stand-in-order": "^0.0.5",
-        "elephant-ears": "1.0.6",
+        "elephant-ears": "1.0.7",
         "jquery": "^2.1.1",
         "booty-datepicker": "0.0.9"
     },

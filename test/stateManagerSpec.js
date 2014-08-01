@@ -117,6 +117,11 @@ describe('State Manager', function () {
     });
 
     it('Should add record to record set', function () {
+        var callback = this.sandbox.spy();
+        this.ears.on('new-record', callback);
+
+        expect(callback.callCount).to.equal(0);
+
         expect(this.stateManager.getRecords()).to.have.length(3);
         var newRecord = this.stateManager.addRecord({name: 'new record 1'});
         expect(newRecord.id).to.equal('-1');
@@ -130,6 +135,9 @@ describe('State Manager', function () {
         expect(this.stateManager.getRecords()[2].id).to.equal('-2');
         expect(this.stateManager.getRecords()[3].id).to.equal('3');
         expect(this.stateManager.getRecords()[4].id).to.equal('-1');
+
+        expect(callback.callCount).to.equal(2);
+        expect(callback.args[1][0]).to.equal(newRecord);
 
     });
 

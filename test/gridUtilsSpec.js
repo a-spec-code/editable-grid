@@ -210,29 +210,26 @@ describe('Grid Utils', function () {
             },
             ears: new Ears()
         };
-        var utils = gridUtils.call(grid, options);
+        var utils = gridUtils.call(grid, options, this.stateManager);
 
-        var spy = this.sandbox.spy(grid, 'render'),
-            callback = this.sandbox.spy();
+        var renderSpy = this.sandbox.spy(grid, 'render'),
+            addRecordSpy = this.sandbox.spy(this.stateManager, 'addRecord');
 
-        grid.ears.on('booty-new-row', callback);
+        expect(renderSpy.callCount).to.equal(0);
+        expect(addRecordSpy.callCount).to.equal(0);
 
-        expect(spy.callCount).to.equal(0);
-        expect(options.data).to.have.length(0);
-        expect(callback.callCount).to.equal(0);
         utils._newRowClicked();
 
-        expect(spy.callCount).to.equal(1);
-        expect(options.data).to.have.length(1);
-        expect(options.data[0].id).to.equal('-1');
-        expect(options.data[0].string).to.equal('hello');
-        expect(options.data[0].cost).to.equal(500.36);
-        expect(options.data[0].percent).to.equal(0.455);
-        expect(options.data[0].date).to.equal('2014-01-01');
-        expect(options.data[0].select).to.equal('a');
+        expect(renderSpy.callCount).to.equal(1);
+        expect(addRecordSpy.callCount).to.equal(1);
+        var newRecord = addRecordSpy.args[0][0];
+        expect(newRecord.id).to.equal('-1');
+        expect(newRecord.string).to.equal('hello');
+        expect(newRecord.cost).to.equal(500.36);
+        expect(newRecord.percent).to.equal(0.455);
+        expect(newRecord.date).to.equal('2014-01-01');
+        expect(newRecord.select).to.equal('a');
 
-        expect(callback.callCount).to.equal(1);
-        expect(callback.args[0][0].id).to.equal('-1');
     });
 
     it('Should update the data on an input change event', function () {
