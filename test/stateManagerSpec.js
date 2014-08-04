@@ -32,13 +32,31 @@ describe('State Manager', function () {
         this.options = {
             recordIdName: 'id'
         };
+        this.columns = [
+            {
+                id: 'col-1'
+            },
+            {
+                id: 'col-2'
+            }
+        ];
         this.ears = new Ears();
-        this.stateManager = new StateManager(this.data, this.ears, this.options);
+        this.stateManager = new StateManager(this.data, this.columns, this.ears, this.options);
     });
 
     afterEach(function () {
         this.sandbox.restore();
         delete this.stateManager;
+    });
+
+    it('Should private vars setup after construction', function () {
+        expect(_.keys(this.stateManager)).to.have.length(6);
+        expect(this.stateManager._data).to.equal(this.data);
+        expect(this.stateManager._columns).to.equal(this.columns);
+        expect(this.stateManager._ears).to.equal(this.ears);
+        expect(this.stateManager._options).to.equal(this.options);
+        expect(this.stateManager._newRecordUniqueId).to.equal(-1);
+        expect(this.stateManager._deletedRecords).to.have.length(0);
     });
 
     it('Should return all records', function () {
@@ -59,7 +77,7 @@ describe('State Manager', function () {
                 key: 'b',
                 name: 'bar'
             }
-        ], this.ears, {
+        ], this.columns, this.ears, {
             recordIdName: 'key'
         });
 
@@ -169,10 +187,15 @@ describe('State Manager', function () {
     it('Should return a set of attributes determining the state of the record', function () {
         var record = this.stateManager.getRecord('2');
         var attributes = this.stateManager.getRecordAttributes(record);
-        expect(_.keys(attributes)).to.have.length(3);
+        expect(_.keys(attributes)).to.have.length(5);
         expect(attributes.areEditableValues).to.have.length(0);
         expect(attributes.canDelete).to.be.true;
         expect(attributes.isNew).to.be.false;
+        expect(attributes.recordClasses).to.have.length(0);
+        var propertyNameClasses = attributes.propertyNameClasses;
+        expect(_.keys(propertyNameClasses)).to.have.length(2);
+        expect(propertyNameClasses['col-1']).to.have.length(0);
+        expect(propertyNameClasses['col-2']).to.have.length(0);
 
         record.id = '-1';
         attributes = this.stateManager.getRecordAttributes(record);
