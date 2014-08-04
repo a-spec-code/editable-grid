@@ -12,12 +12,13 @@ describe('Grid Utils', function () {
 
     beforeEach(function () {
         this.ears = new Ears();
+        this.columns = [];
         this.stateManager = new StateManager([
             {
                 id: 'row-id',
                 'col-a': 'c'
             }
-        ], this.ears, {
+        ], this.columns, this.ears, {
             recordIdName: 'id'
         });
         this.sandbox = sinon.sandbox.create();
