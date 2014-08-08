@@ -1,86 +1,96 @@
-@import '../node_modules/booty-datepicker/less/datepicker';
+@row_height: 30px;
 
-// variables
-@newRowButtonFontSize: 12px;
-@color_table_row_hover: #F5F7D3;
-@color_table_header_row: #ecf5ec;
+.booty-grid {
 
-// mixins
+  background-color: #fefef3;
+  overflow: hidden;
+  border: 1px solid blue;
+  position: relative;
 
-// apply to all tables
-.booty-header-table, .booty-body-table, .booty-footer-table {
-  // set margin-bottom to zero, bootstrap has this set to 20px
+  .table-container {
+    overflow: hidden;
+    border-right: 1px solid blue;
+  }
+
+  .scrollbar-x {
+    overflow-x: auto;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    > div {
+      height: 1px;
+    }
+  }
+
+  .scrollbar-y {
+    overflow-x: auto;
+    width: 17px;
+    position: absolute;
+    right: 0;
+    top: @row_height+3;
+    > div {
+      height: 1px;
+    }
+  }
+
+  .scollbar-deadspace-top {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 33px;
+    width: 15px;
+    background-color: red;
+  }
+  .scollbar-deadspace-bottom {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    height: 15px;
+    width: 15px;
+    background-color: red;
+  }
+
   table {
-    margin-bottom: 0px;
+    box-sizing: border-box;
+    border-collapse: collapse;
+    border-spacing: 0;
+    table-layout: fixed;
+    width: 100%;
   }
 
-  .alignment-right {
-    text-align: right;
+  th, td {
+    border: 1px solid blue;
+    background-color: #fff;
   }
 
-  .alignment-center {
-    text-align: center;
+  th, td {
+    min-width: 50px;
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    height: @row_height;
   }
 
-}
-
-// header table
-.booty-header-table {
-  // sorting
-  .sorted-ascending {
-    width: 0;
-    height: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-bottom: 5px solid black;
-  }
-
-  .sorted-descending {
-    width: 0;
-    height: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-
-    border-top: 5px solid black;
-  }
-
-  th.sortable {
-    cursor: pointer;
-  }
-
-  thead > tr {
-    background-color: @color_table_header_row;
-  }
-}
-
-// body table
-.booty-body-table {
-  overflow-y: auto;
-
-  table.table-hover {
-    tr {
-      cursor: pointer;
-    }
-
-    tr:hover > td {
-      background-color: @color_table_row_hover;
+  .table-header {
+    th {
+      background-color: #ccc;
+      color: #fff;
+      padding: 5px;
     }
   }
 
-  .row-delete {
-    float: left;
-    > button.close {
-      font-size: 20px;
-      background-color: inherit;
-      margin-right: 5px;
+  .table-body {
+
+    td > div {
+      padding: 5px;
+    }
+
+    td.selected {
+      > div {
+        border: 2px solid orange;
+      }
     }
   }
-}
 
-// footer table
-.booty-footer-table {
-
-  button.new-row {
-    font-size: @newRowButtonFontSize;
-  }
 }

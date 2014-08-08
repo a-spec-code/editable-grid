@@ -5,7 +5,13 @@ module.exports = function (grunt) {
         watchify: {
             dist: {
                 src: './lib/demo-bootstrap.js',
-                dest: './public/bootstrap-booty-grid.js'
+                dest: './public/bootstrap-booty-grid.js',
+                options: {
+                    callback: function (b) {
+                        b.transform('hamlify-js');
+                        return b;
+                    }
+                }
             }
         },
         connect: {
@@ -71,7 +77,8 @@ module.exports = function (grunt) {
                 options: {
                     bundleOptions: {
                         standalone: 'BootyGrid'
-                    }
+                    },
+                    transform: [ require('hamlify-js')]
                 }
             }
         },

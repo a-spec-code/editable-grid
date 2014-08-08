@@ -265,5 +265,32 @@ describe('State Manager', function () {
         expect(orderRecords[0].name).to.equal('a');
         expect(orderRecords[1].name).to.equal('b');
         expect(orderRecords[2].name).to.equal('c');
+
+        // confirm only a range of records are returned
+        this.data.push({
+            id: '4',
+            name: 'd'
+        });
+        this.data.push({
+            id: '5',
+            name: 'e'
+        });
+        this.stateManager = new StateManager(this.data, this.columns, this.ears, this.options);
+        orderRecords = [];
+        this.stateManager.iterator(function (record) {
+            orderRecords.push(record);
+        });
+        expect(orderRecords).to.have.length(5);
+        orderRecords = [];
+        this.stateManager.iterator(function (record) {
+            orderRecords.push(record);
+        }, [], {
+            topIndex: 1,
+            bottomIndex: 3
+        });
+        expect(orderRecords).to.have.length(3);
+        expect(orderRecords[0].name).to.equal('b');
+        expect(orderRecords[1].name).to.equal('c');
+        expect(orderRecords[2].name).to.equal('d');
     });
 });
