@@ -10,9 +10,20 @@
   .table-container {
     overflow: hidden;
     border-right: 1px solid blue;
+    position: relative;
 
     .edit-box {
-      position: fixed;
+      position: absolute;
+    }
+
+    .column-resize-line {
+      position: absolute;
+      top: 0;
+      width: 2px;
+      height: 400px;
+      background-color: blue;
+      display: none;
+      cursor: e-resize;
     }
   }
 
@@ -65,6 +76,7 @@
   th, td {
     border: 1px solid blue;
     background-color: #fff;
+    position: relative;
   }
 
   th, td {
@@ -81,6 +93,19 @@
       background-color: #ccc;
       color: #fff;
       padding: 5px;
+
+      .column-resize {
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: inherit;
+        width: 5px;
+
+        &:hover {
+          background-color: orange;
+          cursor: e-resize;
+        }
+      }
     }
   }
 
