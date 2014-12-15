@@ -1,10 +1,9 @@
 {
     "name": "booty-grid",
-    "description": "Bootstrap table with CRUD functionality.",
-    "version": "1.0.8",
+    "description": "Editable Virtual Table.",
+    "version": "2.0.0",
     "main": "index.js",
     "keywords": [
-        "bootstrap",
         "CRUD",
         "table",
         "grid",
@@ -23,8 +22,7 @@
         "underscore": "^1.6.0",
         "stand-in-order": "^0.0.5",
         "elephant-ears": "1.0.7",
-        "jquery": "^2.1.1",
-        "booty-datepicker": "0.0.9"
+        "jquery": "^2.1.1"
     },
     "devDependencies": {
         "hamlify-js": "0.0.1",
@@ -45,6 +43,6 @@
         "grunt-contrib-uglify": "^0.4.0"
     },
     "scripts": {
-        "test": "NODE_PATH=lib grunt test"
+        "test": "NODE_PATH=lib grunt lint test"
     }
 }
