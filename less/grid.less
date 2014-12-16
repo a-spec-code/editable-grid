@@ -113,6 +113,36 @@
         }
       }
     }
+
+    th.sortable {
+      cursor: pointer;
+    }
+
+    .sortIcon() {
+      position: absolute;
+      right: 5px; // depends on width of .column-resize
+      top: 5px;
+      height: inherit;
+    }
+
+    th.sorted-ascending .sort-icon {
+      .sortIcon();
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-bottom: 5px solid black;
+    }
+
+    th.sorted-descending .sort-icon {
+      .sortIcon();
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 5px solid black;
+    }
+
   }
 
   .table-body {
@@ -123,9 +153,9 @@
 
     td.selected {
       > div {
-        -webkit-box-shadow:inset 0px 0px 0px 2px orange;
-        -moz-box-shadow:inset 0px 0px 0px 2px orange;
-        box-shadow:inset 0px 0px 0px 2px orange;
+        -webkit-box-shadow: inset 0px 0px 0px 2px orange;
+        -moz-box-shadow: inset 0px 0px 0px 2px orange;
+        box-shadow: inset 0px 0px 0px 2px orange;
       }
     }
   }

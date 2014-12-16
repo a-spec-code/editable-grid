@@ -7,51 +7,138 @@ var _ = require('underscore'),
 
 describe('Grid', function () {
 
-    beforeEach(function () {
-        this.columns = [
+    it('Should return the grid view', function () {
+
+        var columns = [
             {
-                id: 'col-1',
+                name: 'col-1',
                 width: 100,
                 title: 'boo'
             },
             {
-                id: 'col-a',
+                name: 'col-a',
                 width: 300,
                 title: 'boo'
             },
             {
-                id: 'col-c',
+                name: 'col-c',
                 width: 500,
                 title: 'boo'
             }
         ];
-        this.grid = new Grid({
+        var grid = new Grid({
             el: $('<div/>'),
-            columns: this.columns,
-            data: []
+            columns: columns,
+            data: [],
+            sortConfig: [
+                {
+                    name: 'col-a',
+                    ascending: true
+                }
+            ]
         });
-        this.grid.render();
-    });
+        grid.render();
 
-    afterEach(function () {
-        delete this.grid;
-    });
+        var view = grid.getView();
+        expect(_.keys(view)).to.have.length(2);
 
-    it('Should return the grid view', function () {
-
-        var view = this.grid.getView();
+        // columns
         expect(view.columns).to.have.length(3);
 
         expect(_.keys(view.columns[0])).to.have.length(2);
-        expect(view.columns[0].id).to.equal('col-1');
+        expect(view.columns[0].name).to.equal('col-1');
         expect(view.columns[0].width).to.equal(100);
 
         expect(_.keys(view.columns[1])).to.have.length(2);
-        expect(view.columns[1].id).to.equal('col-a');
+        expect(view.columns[1].name).to.equal('col-a');
         expect(view.columns[1].width).to.equal(300);
 
         expect(_.keys(view.columns[0])).to.have.length(2);
-        expect(view.columns[2].id).to.equal('col-c');
+        expect(view.columns[2].name).to.equal('col-c');
         expect(view.columns[2].width).to.equal(500);
+
+        // sort config
+        expect(view.sortConfig).to.have.length(1);
+        var sortConfig = view.sortConfig[0];
+        expect(_.keys(sortConfig)).to.have.length(2);
+        expect(sortConfig.name).to.equal('col-a');
+        expect(sortConfig.ascending).to.be.true;
+    });
+
+    it('Should sort the column', function () {
+        var container = $('<div/>');
+        var columns = [
+            {
+                name: 'col-1',
+                width: 100,
+                title: 'boo',
+                sortable: true
+            }
+        ];
+        var grid = new Grid({
+            el: container,
+            columns: columns,
+            data: [
+                {
+                    id: '1',
+                    'col-1': 'b'
+                },
+                {
+                    id: '2',
+                    'col-1': 'a'
+                },
+                {
+                    id: '3',
+                    'col-1': 'c'
+                }
+            ]
+        });
+        grid.render();
+
+        var th = container.find('th');
+        expect(th.attr('data-property-name')).to.equal('col-1');
+        expect(th.is('.sortable')).to.be.true;
+
+        // note the current order
+        var td = container.find('tbody td:not([data-property-name="empty-last-column"])');
+        expect(td).to.have.length(3);
+        expect(td.eq(0).text()).to.equal('b');
+        expect(td.eq(1).text()).to.equal('a');
+        expect(td.eq(2).text()).to.equal('c');
+
+        // ascending order
+        th.trigger('click');   // simulate header click
+        th = container.find('th');
+        expect(th.is('.sorted-ascending')).to.be.true;
+        expect(th.is('.sorted-descending')).to.be.false;
+        td = container.find('tbody td:not([data-property-name="empty-last-column"])');
+        expect(td).to.have.length(3);
+        expect(td.eq(0).text()).to.equal('a');
+        expect(td.eq(1).text()).to.equal('b');
+        expect(td.eq(2).text()).to.equal('c');
+
+        // descending order
+        th = container.find('th');
+        th.trigger('click');   // simulate header click
+        th = container.find('th');
+        expect(th.is('.sorted-ascending')).to.be.false;
+        expect(th.is('.sorted-descending')).to.be.true;
+        td = container.find('tbody td:not([data-property-name="empty-last-column"])');
+        expect(td).to.have.length(3);
+        expect(td.eq(0).text()).to.equal('c');
+        expect(td.eq(1).text()).to.equal('b');
+        expect(td.eq(2).text()).to.equal('a');
+
+        // original order
+        th = container.find('th');
+        th.trigger('click');   // simulate header click
+        th = container.find('th');
+        expect(th.is('.sorted-ascending')).to.be.false;
+        expect(th.is('.sorted-descending')).to.be.false;
+        td = container.find('tbody td:not([data-property-name="empty-last-column"])');
+        expect(td).to.have.length(3);
+        expect(td.eq(0).text()).to.equal('b');
+        expect(td.eq(1).text()).to.equal('a');
+        expect(td.eq(2).text()).to.equal('c');
     });
 });
