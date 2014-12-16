@@ -34,10 +34,10 @@ describe('State Manager', function () {
         };
         this.columns = [
             {
-                id: 'col-1'
+                name: 'col-1'
             },
             {
-                id: 'col-2'
+                name: 'col-2'
             }
         ];
         this.ears = new Ears();

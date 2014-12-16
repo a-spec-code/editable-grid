@@ -11,17 +11,17 @@ describe('Grid', function () {
 
         var columns = [
             {
-                id: 'col-1',
+                name: 'col-1',
                 width: 100,
                 title: 'boo'
             },
             {
-                id: 'col-a',
+                name: 'col-a',
                 width: 300,
                 title: 'boo'
             },
             {
-                id: 'col-c',
+                name: 'col-c',
                 width: 500,
                 title: 'boo'
             }
@@ -29,31 +29,47 @@ describe('Grid', function () {
         var grid = new Grid({
             el: $('<div/>'),
             columns: columns,
-            data: []
+            data: [],
+            sortConfig: [
+                {
+                    name: 'col-a',
+                    ascending: true
+                }
+            ]
         });
         grid.render();
 
         var view = grid.getView();
+        expect(_.keys(view)).to.have.length(2);
+
+        // columns
         expect(view.columns).to.have.length(3);
 
         expect(_.keys(view.columns[0])).to.have.length(2);
-        expect(view.columns[0].id).to.equal('col-1');
+        expect(view.columns[0].name).to.equal('col-1');
         expect(view.columns[0].width).to.equal(100);
 
         expect(_.keys(view.columns[1])).to.have.length(2);
-        expect(view.columns[1].id).to.equal('col-a');
+        expect(view.columns[1].name).to.equal('col-a');
         expect(view.columns[1].width).to.equal(300);
 
         expect(_.keys(view.columns[0])).to.have.length(2);
-        expect(view.columns[2].id).to.equal('col-c');
+        expect(view.columns[2].name).to.equal('col-c');
         expect(view.columns[2].width).to.equal(500);
+
+        // sort config
+        expect(view.sortConfig).to.have.length(1);
+        var sortConfig = view.sortConfig[0];
+        expect(_.keys(sortConfig)).to.have.length(2);
+        expect(sortConfig.name).to.equal('col-a');
+        expect(sortConfig.ascending).to.be.true;
     });
 
     it('Should sort the column', function () {
         var container = $('<div/>');
         var columns = [
             {
-                id: 'col-1',
+                name: 'col-1',
                 width: 100,
                 title: 'boo',
                 sortable: true
