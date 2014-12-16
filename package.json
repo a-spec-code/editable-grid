@@ -1,48 +1,49 @@
 {
-    "name": "booty-grid",
-    "description": "Editable Virtual Table.",
-    "version": "2.0.0",
-    "main": "index.js",
-    "keywords": [
-        "CRUD",
-        "table",
-        "grid",
-        "add",
-        "delete",
-        "update",
-        "sorting",
-        "links",
-        "row selection"
-    ],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/skinnybrit51/booty-grid"
-    },
-    "dependencies": {
-        "underscore": "^1.6.0",
-        "stand-in-order": "^0.0.5",
-        "elephant-ears": "1.0.7",
-        "jquery": "^2.1.1"
-    },
-    "devDependencies": {
-        "hamlify-js": "0.0.1",
-        "moment": "2.7.0",
-        "mocha": "1.18.0",
-        "chai": "1.9.0",
-        "grunt": "~0.4.2",
-        "grunt-cli": "0.1.11",
-        "grunt-simple-mocha": "~0.4.0",
-        "grunt-jshint2": "~2.4.4",
-        "jsdom": "~0.8.10",
-        "sinon": "~1.9.0",
-        "grunt-contrib-connect": "~0.7.1",
-        "grunt-watchify": "~0.1.0",
-        "grunt-contrib-less": "^0.11.0",
-        "grunt-contrib-watch": "^0.6.1",
-        "grunt-browserify": "^2.0.8",
-        "grunt-contrib-uglify": "^0.4.0"
-    },
-    "scripts": {
-        "test": "NODE_PATH=lib grunt lint test"
-    }
+  "name": "booty-grid",
+  "description": "Editable Virtual Table.",
+  "version": "2.0.0",
+  "main": "index.js",
+  "keywords": [
+    "CRUD",
+    "table",
+    "grid",
+    "add",
+    "delete",
+    "update",
+    "sorting",
+    "links",
+    "row selection"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/skinnybrit51/booty-grid"
+  },
+  "dependencies": {
+    "underscore": "^1.6.0",
+    "stand-in-order": "^0.0.5",
+    "elephant-ears": "1.0.7",
+    "jquery": "^2.1.1"
+  },
+  "devDependencies": {
+    "hamlify-js": "0.0.1",
+    "moment": "2.7.0",
+    "mocha": "1.18.0",
+    "chai": "1.9.0",
+    "grunt": "~0.4.2",
+    "grunt-cli": "0.1.11",
+    "grunt-simple-mocha": "~0.4.0",
+    "grunt-jshint2": "~2.4.4",
+    "jsdom": "~0.8.10",
+    "sinon": "~1.9.0",
+    "grunt-contrib-connect": "~0.7.1",
+    "grunt-watchify": "~0.1.0",
+    "grunt-contrib-less": "^0.11.0",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-browserify": "^2.0.8",
+    "grunt-contrib-uglify": "^0.4.0",
+    "haml": "^0.4.3"
+  },
+  "scripts": {
+    "test": "NODE_PATH=lib grunt lint test"
+  }
 }
