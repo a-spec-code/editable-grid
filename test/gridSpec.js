@@ -55,7 +55,8 @@ describe('Grid', function () {
             {
                 id: 'col-1',
                 width: 100,
-                title: 'boo'
+                title: 'boo',
+                sortable: true
             }
         ];
         var grid = new Grid({
@@ -80,6 +81,7 @@ describe('Grid', function () {
 
         var th = container.find('th');
         expect(th.attr('data-property-name')).to.equal('col-1');
+        expect(th.is('.sortable')).to.be.true;
 
         // note the current order
         var td = container.find('tbody td:not([data-property-name="empty-last-column"])');
@@ -90,6 +92,9 @@ describe('Grid', function () {
 
         // ascending order
         th.trigger('click');   // simulate header click
+        th = container.find('th');
+        expect(th.is('.sorted-ascending')).to.be.true;
+        expect(th.is('.sorted-descending')).to.be.false;
         td = container.find('tbody td:not([data-property-name="empty-last-column"])');
         expect(td).to.have.length(3);
         expect(td.eq(0).text()).to.equal('a');
@@ -97,7 +102,11 @@ describe('Grid', function () {
         expect(td.eq(2).text()).to.equal('c');
 
         // descending order
-        container.find('th').trigger('click');   // simulate header click
+        th = container.find('th');
+        th.trigger('click');   // simulate header click
+        th = container.find('th');
+        expect(th.is('.sorted-ascending')).to.be.false;
+        expect(th.is('.sorted-descending')).to.be.true;
         td = container.find('tbody td:not([data-property-name="empty-last-column"])');
         expect(td).to.have.length(3);
         expect(td.eq(0).text()).to.equal('c');
@@ -105,7 +114,11 @@ describe('Grid', function () {
         expect(td.eq(2).text()).to.equal('a');
 
         // original order
-        container.find('th').trigger('click');   // simulate header click
+        th = container.find('th');
+        th.trigger('click');   // simulate header click
+        th = container.find('th');
+        expect(th.is('.sorted-ascending')).to.be.false;
+        expect(th.is('.sorted-descending')).to.be.false;
         td = container.find('tbody td:not([data-property-name="empty-last-column"])');
         expect(td).to.have.length(3);
         expect(td.eq(0).text()).to.equal('b');
