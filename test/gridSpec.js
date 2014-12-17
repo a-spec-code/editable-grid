@@ -2,10 +2,19 @@ require('./loader');
 
 var _ = require('underscore'),
     $ = require('jquery'),
+    sinon = require('sinon'),
     expect = require('chai').expect,
     Grid = require('grid');
 
 describe('Grid', function () {
+
+    beforeEach(function () {
+        this.sandbox = sinon.sandbox.create();
+    });
+
+    afterEach(function () {
+        this.sandbox.restore();
+    });
 
     it('Should return the grid view', function () {
 
@@ -140,5 +149,97 @@ describe('Grid', function () {
         expect(td.eq(0).text()).to.equal('b');
         expect(td.eq(1).text()).to.equal('a');
         expect(td.eq(2).text()).to.equal('c');
+    });
+
+    it('Should add a new row', function () {
+        var container = $('<div/>');
+        var columns = [
+            {
+                name: 'col-1',
+                width: 100,
+                title: 'boo',
+                sortable: true
+            }
+        ];
+        var grid = new Grid({
+            el: container,
+            columns: columns,
+            data: []
+        });
+        grid.render();
+        var canAddSpy = function () {
+            return true;
+        };
+        grid.on('booty.can-add', canAddSpy);
+
+        // no records
+        var tr = container.find('tbody tr');
+        expect(tr).to.have.length(0);
+        grid.add();
+        tr = container.find('tbody tr');
+        expect(tr).to.have.length(1);
+
+        // existing records - should place record underneath
+        container = $('<div/>');
+        grid = new Grid({
+            el: container,
+            columns: columns,
+            data: [
+                {
+                    id: '1',
+                    'col-1': 'b'
+                },
+                {
+                    id: '2',
+                    'col-1': 'a'
+                }
+            ]
+        });
+        grid.render();
+        grid.on('booty.can-add', canAddSpy);
+        grid.add();
+        tr = container.find('tbody tr');
+        expect(tr).to.have.length(3);
+        // the second row is the new row and should be selected
+        var td = tr.eq(1).find('td');
+        expect(tr.eq(1).attr('data-record-id')).to.equal('-1');
+        expect(td.is('.selected')).to.be.true;
+
+        // should add a record from insert key
+        td.eq(1).trigger($.Event('keydown', {keyCode: 45}));
+        tr = container.find('tbody tr');
+        expect(tr).to.have.length(4);
+
+    });
+
+    it('Should pass in record for can add event', function (done) {
+        var container = $('<div/>');
+        var grid = new Grid({
+            el: container,
+            columns: [
+                {
+                    name: 'col-1',
+                    width: 100,
+                    title: 'boo',
+                    sortable: true
+                }
+            ],
+            data: [
+                {
+                    id: '1',
+                    'col-1': 'b'
+                },
+                {
+                    id: '2',
+                    'col-1': 'a'
+                }
+            ]
+        });
+        grid.render();
+        grid.on('booty.can-add', function(record){
+            expect(record.id).to.equal('1');
+            done();
+        });
+        grid.add();
     });
 });
