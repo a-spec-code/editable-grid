@@ -141,12 +141,14 @@ describe('State Manager', function () {
         expect(callback.callCount).to.equal(0);
 
         expect(this.stateManager.getRecords()).to.have.length(3);
-        var newRecord = this.stateManager.addRecord({name: 'new record 1'});
-        expect(newRecord.id).to.equal('-1');
+        var newRecord = this.stateManager.addRecord({
+            name: 'new record 1'
+        });
         expect(newRecord.name).to.equal('new record 1');
         expect(this.stateManager.getRecords()[3].id).to.equal('-1');
-        newRecord = this.stateManager.addRecord({name: 'new record 2'}, 2);
-        expect(newRecord.id).to.equal('-2');
+        newRecord = this.stateManager.addRecord({
+            name: 'new record 2'
+        }, 2);
         expect(newRecord.name).to.equal('new record 2');
         expect(this.stateManager.getRecords()[0].id).to.equal('1');
         expect(this.stateManager.getRecords()[1].id).to.equal('2');
@@ -292,5 +294,11 @@ describe('State Manager', function () {
         expect(orderRecords[0].name).to.equal('b');
         expect(orderRecords[1].name).to.equal('c');
         expect(orderRecords[2].name).to.equal('d');
+    });
+
+    it('Should create a new record', function () {
+        var record = this.stateManager.createRecord();
+        expect(_.isEmpty(record)).to.be.true;
+
     });
 });
