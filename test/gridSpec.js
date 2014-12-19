@@ -242,4 +242,50 @@ describe('Grid', function () {
         });
         grid.add();
     });
+
+    it('Should be able to delete a record', function () {
+        var container = $('<div/>');
+        var grid = new Grid({
+            el: container,
+            columns: [
+                {
+                    name: 'col-1',
+                    width: 100,
+                    title: 'boo',
+                    sortable: true
+                }
+            ],
+            data: [
+                {
+                    id: '1',
+                    'col-1': 'b'
+                },
+                {
+                    id: '2',
+                    'col-1': 'a'
+                }
+            ]
+        });
+        grid.render();
+        grid.on('booty.can-delete', function(/*record*/){
+            return true;
+        });
+        var tr = container.find('tbody tr');
+        expect(tr).to.have.length(2);
+        expect(tr.eq(0).attr('data-record-id')).to.equal('1');
+        expect(tr.eq(1).attr('data-record-id')).to.equal('2');
+
+        grid.delete();
+
+        tr = container.find('tbody tr');
+        expect(tr).to.have.length(1);
+        expect(tr.eq(0).attr('data-record-id')).to.equal('2');
+
+        grid.delete();
+
+        tr = container.find('tbody tr');
+        expect(tr).to.have.length(0);
+
+        grid.delete();      // ensure no error is thrown when no rows exist to delete
+    });
 });

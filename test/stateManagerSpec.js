@@ -191,7 +191,7 @@ describe('State Manager', function () {
         var attributes = this.stateManager.getRecordAttributes(record);
         expect(_.keys(attributes)).to.have.length(5);
         expect(attributes.areEditableValues).to.have.length(0);
-        expect(attributes.canDelete).to.be.true;
+        expect(attributes.canDelete).to.be.null;
         expect(attributes.isNew).to.be.false;
         expect(attributes.recordClasses).to.have.length(0);
         var propertyNameClasses = attributes.propertyNameClasses;
