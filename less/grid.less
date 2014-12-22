@@ -1,15 +1,24 @@
 @row_height: 30px;
+@scrollbar_width: 17px;
+
+// TODO - TEMP to be removed
+#table-1, #table-2 {
+  display: inline-block;
+  margin: 50px;
+}
 
 .booty-grid {
-
+  box-sizing: border-box;
   background-color: #fefef3;
   overflow: hidden;
-  border: 1px solid blue;
+  border-collapse: collapse;
+//  border: 1px solid blue;   // this causes height not to be exact
   position: relative;
 
   .table-container {
     border-right: 1px solid blue;
     position: relative;
+    height: 100%;
 
     .edit-box {
       position: absolute;
@@ -26,24 +35,29 @@
     }
   }
 
+
   .scrollbar-x {
+    background-color: #dde;
     overflow-x: auto;
     position: absolute;
     left: 0;
     bottom: 0;
     > div {
+      background-color: #bbd;
       height: 1px;
     }
   }
 
   .scrollbar-y {
-    overflow-x: auto;
-    width: 17px;
+    top: 0 + @row_height + 2; // 2 for borders
+    height: calc(~"100% - "@row_height);
+    background-color: #dde;
+    width: @scrollbar_width;
     position: absolute;
     right: 0;
-    top: @row_height+3;
     > div {
-      height: 1px;
+      background-color: #bbd;
+      height: 50px;
     }
   }
 
@@ -51,8 +65,8 @@
     position: absolute;
     right: 0;
     top: 0;
-    height: 33px;
-    width: 15px;
+    height: 30px;
+    width: @scrollbar_width;
     background-color: red;
   }
   .scollbar-deadspace-bottom {
@@ -60,7 +74,7 @@
     right: 0;
     bottom: 0;
     height: 15px;
-    width: 15px;
+    width: @scrollbar_width;
     background-color: red;
   }
 
@@ -74,19 +88,18 @@
   }
 
   th, td {
+    padding: 0;
     border: 1px solid blue;
     background-color: #fff;
     position: relative;
     background-clip: padding-box;
-  }
-
-  th, td {
     min-width: 50px;
     box-sizing: border-box;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     height: @row_height;
+
   }
 
   th[data-property-name="empty-last-column"], td[data-property-name="empty-last-column"] {
@@ -95,6 +108,8 @@
   }
 
   .table-header {
+    height: @row_height;
+
     th {
       background-color: #ccc;
       color: #fff;
@@ -149,6 +164,7 @@
 
     td > div {
       padding: 5px;
+      height: 100%;
     }
 
     td.selected {
