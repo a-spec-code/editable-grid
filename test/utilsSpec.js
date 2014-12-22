@@ -1,8 +1,6 @@
 require('./loader');
 
-var _ = require('underscore'),
-    $ = require('jquery'),
-    sinon = require('sinon'),
+var sinon = require('sinon'),
     expect = require('chai').expect,
     utils = require('utils');
 
@@ -36,24 +34,24 @@ describe('Utils', function () {
         expect(utils.calculateTotalColumnsWidth(this.columns)).to.equal(225);
     });
 
-    it('Should determine if all rows can fit into view', function () {
+    it('Should determine if all records can fit into view', function () {
 
-        expect(utils.canFitRows({
+        expect(utils.canFitRecords({
             TBODY_HEIGHT: 90,
             TR_HEIGHT: 30
         }, [{}, {}, {}])).to.be.true;
 
-        expect(utils.canFitRows({
+        expect(utils.canFitRecords({
             TBODY_HEIGHT: 91,
             TR_HEIGHT: 30
         }, [{}, {}, {}])).to.be.true;
 
-        expect(utils.canFitRows({
+        expect(utils.canFitRecords({
             TBODY_HEIGHT: 93,
             TR_HEIGHT: 31
         }, [{}, {}, {}])).to.be.true;
 
-        expect(utils.canFitRows({
+        expect(utils.canFitRecords({
             TBODY_HEIGHT: 89,
             TR_HEIGHT: 30
         }, [{}, {}, {}])).to.be.false;
@@ -68,12 +66,12 @@ describe('Utils', function () {
 
     it('Should calculate the amount of records that can be shown in view', function () {
 
-        expect(utils.calculateAmountOfRows({
+        expect(utils.calculateAmountOfRecords({
             TBODY_HEIGHT: 89,
             TR_HEIGHT: 30
         })).to.equal(2);
 
-        expect(utils.calculateAmountOfRows({
+        expect(utils.calculateAmountOfRecords({
             TBODY_HEIGHT: 90,
             TR_HEIGHT: 30
         })).to.equal(3);
@@ -97,11 +95,11 @@ describe('Utils', function () {
             width: 45
         });
 
-        expect(utils.calculateAmountOfColumns({TBODY_WIDTH: 100}, this.columns, 0))
+        expect(utils.calculateAmountOfColumns({TBODY_WIDTH: 100, columnTopIndex: 0}, this.columns))
             .to.equal(1);
-        expect(utils.calculateAmountOfColumns({TBODY_WIDTH: 100}, this.columns, 4))
+        expect(utils.calculateAmountOfColumns({TBODY_WIDTH: 100, columnTopIndex: 4}, this.columns))
             .to.equal(4);
-        expect(utils.calculateAmountOfColumns({TBODY_WIDTH: 20}, this.columns, 5))
+        expect(utils.calculateAmountOfColumns({TBODY_WIDTH: 20, columnTopIndex: 5}, this.columns))
             .to.equal(2);
     });
 });

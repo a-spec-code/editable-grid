@@ -12,7 +12,7 @@
   background-color: #fefef3;
   overflow: hidden;
   border-collapse: collapse;
-//  border: 1px solid blue;   // this causes height not to be exact
+  //  border: 1px solid blue;   // this causes height not to be exact
   position: relative;
 
   .table-container {
@@ -35,47 +35,51 @@
     }
   }
 
-
-  .scrollbar-x {
-    background-color: #dde;
-    overflow-x: auto;
+  .scrollbar {
     position: absolute;
-    left: 0;
-    bottom: 0;
-    > div {
-      background-color: #bbd;
-      height: 1px;
+
+    &.scrollbar-x {
+      background-color: #dde;
+      overflow-x: auto;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: @scrollbar_width;
+      .scrollbar-scroller {
+        background-color: #bbd;
+        height: 100%;
+        width: 50px;
+      }
     }
-  }
 
-  .scrollbar-y {
-    top: 0 + @row_height + 2; // 2 for borders
-    height: calc(~"100% - "@row_height);
-    background-color: #dde;
-    width: @scrollbar_width;
-    position: absolute;
-    right: 0;
-    > div {
-      background-color: #bbd;
-      height: 50px;
+    &.scrollbar-y {
+      top: 0 + @row_height + 2; // 2 for borders
+      height: calc(~"100% - " @row_height);
+      background-color: #dde;
+      width: @scrollbar_width;
+      right: 0;
+      .scrollbar-scroller {
+        background-color: #bbd;
+        height: 50px;
+      }
+
+      .scollbar-deadspace-top {
+        right: 0;
+        top: 0;
+        height: @row_height;
+        width: @scrollbar_width;
+        background-color: red;
+      }
+
+      .scollbar-deadspace-bottom {
+        right: 0;
+        bottom: 0;
+        height: 15px;
+        width: @scrollbar_width;
+        background-color: red;
+      }
     }
-  }
 
-  .scollbar-deadspace-top {
-    position: absolute;
-    right: 0;
-    top: 0;
-    height: 30px;
-    width: @scrollbar_width;
-    background-color: red;
-  }
-  .scollbar-deadspace-bottom {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    height: 15px;
-    width: @scrollbar_width;
-    background-color: red;
   }
 
   table {

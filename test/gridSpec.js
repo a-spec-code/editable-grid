@@ -21,17 +21,17 @@ describe('Grid', function () {
         var columns = [
             {
                 name: 'col-1',
-                width: 100,
+                width: 1,
                 title: 'boo'
             },
             {
                 name: 'col-a',
-                width: 300,
+                width: 2,
                 title: 'boo'
             },
             {
                 name: 'col-c',
-                width: 500,
+                width: 3,
                 title: 'boo'
             }
         ];
@@ -56,15 +56,15 @@ describe('Grid', function () {
 
         expect(_.keys(view.columns[0])).to.have.length(2);
         expect(view.columns[0].name).to.equal('col-1');
-        expect(view.columns[0].width).to.equal(100);
+        expect(view.columns[0].width).to.equal(1);
 
         expect(_.keys(view.columns[1])).to.have.length(2);
         expect(view.columns[1].name).to.equal('col-a');
-        expect(view.columns[1].width).to.equal(300);
+        expect(view.columns[1].width).to.equal(2);
 
         expect(_.keys(view.columns[0])).to.have.length(2);
         expect(view.columns[2].name).to.equal('col-c');
-        expect(view.columns[2].width).to.equal(500);
+        expect(view.columns[2].width).to.equal(3);
 
         // sort config
         expect(view.sortConfig).to.have.length(1);
@@ -79,7 +79,7 @@ describe('Grid', function () {
         var columns = [
             {
                 name: 'col-1',
-                width: 100,
+                width: 1,
                 title: 'boo',
                 sortable: true
             }
@@ -156,7 +156,7 @@ describe('Grid', function () {
         var columns = [
             {
                 name: 'col-1',
-                width: 100,
+                width: 1,
                 title: 'boo',
                 sortable: true
             }
@@ -219,7 +219,7 @@ describe('Grid', function () {
             columns: [
                 {
                     name: 'col-1',
-                    width: 100,
+                    width: 1,
                     title: 'boo',
                     sortable: true
                 }
@@ -236,7 +236,7 @@ describe('Grid', function () {
             ]
         });
         grid.render();
-        grid.on('booty.can-add', function(record){
+        grid.on('booty.can-add', function (record) {
             expect(record.id).to.equal('1');
             done();
         });
@@ -250,7 +250,7 @@ describe('Grid', function () {
             columns: [
                 {
                     name: 'col-1',
-                    width: 100,
+                    width: 1,
                     title: 'boo',
                     sortable: true
                 }
@@ -267,7 +267,7 @@ describe('Grid', function () {
             ]
         });
         grid.render();
-        grid.on('booty.can-delete', function(/*record*/){
+        grid.on('booty.can-delete', function (/*record*/) {
             return true;
         });
         var tr = container.find('tbody tr');
@@ -287,5 +287,96 @@ describe('Grid', function () {
         expect(tr).to.have.length(0);
 
         grid.delete();      // ensure no error is thrown when no rows exist to delete
+    });
+
+    it('Should not display vertical scroll bar', function () {
+        var container = $('<div/>');
+        var data = [
+            {
+                id: '1',
+                'col-1': 'b'
+            },
+            {
+                id: '2',
+                'col-1': 'a'
+            }
+        ];
+        var grid = new Grid({
+            el: container,
+            height: 90,     // 1 header row and 2 body rows
+            columns: [
+                {
+                    name: 'col-1',
+                    width: 1
+                }
+            ],
+            data: data
+        });
+        grid.render();
+
+        var scrollbar = container.find('.scrollbar-y');
+        expect(scrollbar).to.have.length(1);
+
+        // should not display scroll bar
+        expect(scrollbar.css('display')).to.equal('none');
+
+        // should have scroll bar
+        data.push({
+            id: '3',
+            'col-1': 'foo'
+        });
+        grid.render();
+        expect(scrollbar.css('display')).to.equal('');
+    });
+
+    it('Should not display horizontal scroll bar', function () {
+        var container = $('<div/>');
+        var columns = [
+            {
+                name: 'col-1',
+                width: 25
+            },
+            {
+                name: 'col-2',
+                width: 25
+            }
+        ];
+        var grid = new Grid({
+            el: container,
+            width: 50,     // 1 header row and 2 body rows
+            columns: columns,
+            data: [
+                {
+                    id: '1',
+                    'col-1': 'b'
+                }
+            ]
+        });
+        grid.render();
+
+        var scrollbar = container.find('.scrollbar-x');
+        expect(scrollbar).to.have.length(1);
+
+        // should not display scroll bar
+        expect(scrollbar.css('display')).to.equal('none');
+
+        // should have scroll bar
+        columns.push({
+            name: '3',
+            width: 25
+        });
+        grid = new Grid({
+            el: container,
+            width: 50,     // 1 header row and 2 body rows
+            columns: columns,
+            data: [
+                {
+                    id: '1',
+                    'col-1': 'b'
+                }
+            ]
+        });
+        grid.render();
+        expect(scrollbar.css('display')).to.equal('');
     });
 });
