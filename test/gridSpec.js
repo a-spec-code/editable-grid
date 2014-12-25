@@ -314,7 +314,7 @@ describe('Grid', function () {
         });
         grid.render();
 
-        var scrollbar = container.find('.scrollbar-y');
+        var scrollbar = container.find('.scrollbar-container-vertical');
         expect(scrollbar).to.have.length(1);
 
         // should not display scroll bar
@@ -354,7 +354,7 @@ describe('Grid', function () {
         });
         grid.render();
 
-        var scrollbar = container.find('.scrollbar-x');
+        var scrollbar = container.find('.scrollbar-container-horizontal');
         expect(scrollbar).to.have.length(1);
 
         // should not display scroll bar

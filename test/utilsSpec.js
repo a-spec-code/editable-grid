@@ -17,9 +17,6 @@ describe('Utils', function () {
             }, {
                 name: '1',
                 width: 100
-            }, {
-                name: 'empty-last-column',
-                width: 50
             }
         ];
         this.sandbox = sinon.sandbox.create();
@@ -66,18 +63,22 @@ describe('Utils', function () {
 
     it('Should calculate the amount of records that can be shown in view', function () {
 
+        var records = [{}, {}];
+
         expect(utils.calculateAmountOfRecords({
             TBODY_HEIGHT: 89,
-            TR_HEIGHT: 30
-        })).to.equal(2);
+            TR_HEIGHT: 30,
+            SCROLL_BAR_WIDTH: 17
+        }, records)).to.equal(2);
 
         expect(utils.calculateAmountOfRecords({
             TBODY_HEIGHT: 90,
-            TR_HEIGHT: 30
-        })).to.equal(3);
+            TR_HEIGHT: 30,
+            SCROLL_BAR_WIDTH: 17
+        }, records)).to.equal(3);
     });
 
-    it('Should calculate the amount of columns that can be shown in view', function () {
+    it('Should calculate the bottom index for columns', function () {
         this.columns.push({
             name: 'a',
             width: 30
@@ -95,11 +96,63 @@ describe('Utils', function () {
             width: 45
         });
 
-        expect(utils.calculateAmountOfColumns({TBODY_WIDTH: 100, columnTopIndex: 0}, this.columns))
-            .to.equal(1);
-        expect(utils.calculateAmountOfColumns({TBODY_WIDTH: 100, columnTopIndex: 4}, this.columns))
+        expect(utils.calculateColumnBottomIndex({TBODY_WIDTH: 100, columnTopIndex: 0}, this.columns))
+            .to.equal(0);
+        expect(utils.calculateColumnBottomIndex({TBODY_WIDTH: 100, columnTopIndex: 4}, this.columns))
+            .to.equal(6);
+        expect(utils.calculateColumnBottomIndex({TBODY_WIDTH: 20, columnTopIndex: 5}, this.columns))
+            .to.equal(5);
+    });
+
+    it('Should calculate the top index for columns', function () {
+        this.columns.push({
+            name: 'a',
+            width: 30
+        });
+        this.columns.push({
+            name: 'a',
+            width: 10
+        });
+        this.columns.push({
+            name: 'a',
+            width: 5
+        });
+        this.columns.push({
+            name: 'a',
+            width: 45
+        });
+
+        expect(utils.calculateColumnTopIndex({TBODY_WIDTH: 100, columnBottomIndex: 6}, this.columns))
+            .to.equal(3);
+        expect(utils.calculateColumnTopIndex({TBODY_WIDTH: 100, columnBottomIndex: 4}, this.columns))
+            .to.equal(3);
+        expect(utils.calculateColumnTopIndex({TBODY_WIDTH: 20, columnBottomIndex: 5}, this.columns))
             .to.equal(4);
-        expect(utils.calculateAmountOfColumns({TBODY_WIDTH: 20, columnTopIndex: 5}, this.columns))
-            .to.equal(2);
+    });
+
+    it('Should calculate the record top index', function () {
+
+        var records = [{}, {}, {}];
+
+        expect(utils.calculateRecordTopIndex({
+            TBODY_HEIGHT: 89,
+            TR_HEIGHT: 30,
+            SCROLL_BAR_WIDTH: 17,
+            recordBottomIndex: 2
+        }, records)).to.equal(1);
+
+    });
+
+    it('Should calculate the record bottom index', function () {
+
+        var records = [{}, {}, {}];
+
+        expect(utils.calculateRecordBottomIndex({
+            TBODY_HEIGHT: 89,
+            TR_HEIGHT: 30,
+            SCROLL_BAR_WIDTH: 17,
+            recordTopIndex: 0
+        }, records)).to.equal(1);
+
     });
 });

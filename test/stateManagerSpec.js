@@ -47,6 +47,7 @@ describe('State Manager', function () {
     afterEach(function () {
         this.sandbox.restore();
         delete this.stateManager;
+        delete this.ears;
     });
 
     it('Should private vars setup after construction', function () {
