@@ -10,15 +10,14 @@
 .booty-grid {
   box-sizing: border-box;
   background-color: #fefef3;
-  overflow: hidden;
   border-collapse: collapse;
   //  border: 1px solid blue;   // this causes height not to be exact
   position: relative;
+//  overflow: hidden;
 
   .table-container {
-    border-right: 1px solid blue;
     position: relative;
-    height: 100%;
+//    width: 480px;
 
     .edit-box {
       position: absolute;
@@ -93,16 +92,26 @@
 
   table {
     box-sizing: border-box;
-    border-collapse: collapse;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
     border-spacing: 0;
     table-layout: fixed;
-    width: 100%;
+    width: 0;
     position: relative;
+    &:focus {
+      outline: none;
+    }
   }
 
   th, td {
     padding: 0;
-    border: 1px solid blue;
+    // order collapse does not seem to work in chrome
+    border-top: 1px solid blue;
+    border-left: 1px solid blue;
+    border-bottom: 1px solid blue;
+    &:last-child {
+      border-right: 1px solid blue;
+    }
     background-color: #fff;
     position: relative;
     background-clip: padding-box;
@@ -115,6 +124,16 @@
 
   }
 
+  td {
+    border: none;
+    border-left: 1px solid blue;
+    border-bottom: 1px solid blue;
+
+    &:last-child {
+      border-right: 1px solid blue;
+    }
+  }
+
   th[data-property-name="empty-last-column"], td[data-property-name="empty-last-column"] {
     background-color: inherit;
     border: none;
@@ -124,9 +143,10 @@
     height: @row_height;
 
     th {
+//      border-bottom: none;
       background-color: #ccc;
       color: #fff;
-      padding: 5px;
+//      padding: 5px;
 
       .column-resize {
         position: absolute;
@@ -174,8 +194,8 @@
   }
 
   .table-body {
-
     td > div {
+      -moz-box-sizing: border-box;  // only required for FF
       padding: 5px;
       height: 100%;
     }
