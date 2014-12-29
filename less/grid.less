@@ -13,11 +13,16 @@
   border-collapse: collapse;
   //  border: 1px solid blue;   // this causes height not to be exact
   position: relative;
-//  overflow: hidden;
 
-  .table-container {
+  .table-container-header {
     position: relative;
-//    width: 480px;
+    height: @row_height;
+    overflow-x: hidden;
+  }
+
+  .table-container-body {
+    position: relative;
+    overflow: hidden;
 
     .edit-box {
       position: absolute;
@@ -25,9 +30,9 @@
 
     .column-resize-line {
       position: absolute;
-      top: 0;
+      top: 0px;
       width: 2px;
-      height: 400px;
+      height: 100%;
       background-color: blue;
       display: none;
       cursor: e-resize;
