@@ -1,6 +1,7 @@
 require('./loader');
 
-var sinon = require('sinon'),
+var _ = require('underscore'),
+    sinon = require('sinon'),
     expect = require('chai').expect,
     utils = require('utils');
 
@@ -25,6 +26,10 @@ describe('Utils', function () {
     afterEach(function () {
         this.sandbox.restore();
         this.columns = [];
+    });
+
+    it('Should have the following amount of utility functions', function () {
+        expect(_.keys(utils)).to.have.length(8);
     });
 
     it('Should calculate the total width of all the columns', function () {
@@ -61,98 +66,82 @@ describe('Utils', function () {
 
     });
 
-    it('Should calculate the amount of records that can be shown in view', function () {
+    it('Should calculate the amount of records that the view can hold', function () {
 
         var records = [{}, {}];
 
         expect(utils.calculateAmountOfRecords({
             TBODY_HEIGHT: 89,
-            TR_HEIGHT: 30,
-            SCROLL_BAR_WIDTH: 17
+            TR_HEIGHT: 30
         }, records)).to.equal(2);
 
         expect(utils.calculateAmountOfRecords({
             TBODY_HEIGHT: 90,
+            TR_HEIGHT: 30
+        }, records)).to.equal(3);
+
+        expect(utils.calculateAmountOfRecords({
+            TBODY_HEIGHT: 290,
+            TR_HEIGHT: 30
+        }, records)).to.equal(9);
+
+        expect(utils.calculateAmountOfRecords({
+            TBODY_HEIGHT: 300,
+            TR_HEIGHT: 30
+        }, records)).to.equal(10);
+    });
+
+    it('Should calculate the amount of records that can be shown', function () {
+
+        expect(utils.calculateAmountOfRecordsToShow({
+            TBODY_HEIGHT: 290,
             TR_HEIGHT: 30,
             SCROLL_BAR_WIDTH: 17
-        }, records)).to.equal(3);
-    });
+        })).to.equal(9);
 
-    it('Should calculate the bottom index for columns', function () {
-        this.columns.push({
-            name: 'a',
-            width: 30
-        });
-        this.columns.push({
-            name: 'a',
-            width: 10
-        });
-        this.columns.push({
-            name: 'a',
-            width: 5
-        });
-        this.columns.push({
-            name: 'a',
-            width: 45
-        });
-
-        expect(utils.calculateColumnBottomIndex({TBODY_WIDTH: 100, columnTopIndex: 0}, this.columns))
-            .to.equal(0);
-        expect(utils.calculateColumnBottomIndex({TBODY_WIDTH: 100, columnTopIndex: 4}, this.columns))
-            .to.equal(6);
-        expect(utils.calculateColumnBottomIndex({TBODY_WIDTH: 20, columnTopIndex: 5}, this.columns))
-            .to.equal(5);
-    });
-
-    it('Should calculate the top index for columns', function () {
-        this.columns.push({
-            name: 'a',
-            width: 30
-        });
-        this.columns.push({
-            name: 'a',
-            width: 10
-        });
-        this.columns.push({
-            name: 'a',
-            width: 5
-        });
-        this.columns.push({
-            name: 'a',
-            width: 45
-        });
-
-        expect(utils.calculateColumnTopIndex({TBODY_WIDTH: 100, columnBottomIndex: 6}, this.columns))
-            .to.equal(3);
-        expect(utils.calculateColumnTopIndex({TBODY_WIDTH: 100, columnBottomIndex: 4}, this.columns))
-            .to.equal(3);
-        expect(utils.calculateColumnTopIndex({TBODY_WIDTH: 20, columnBottomIndex: 5}, this.columns))
-            .to.equal(4);
-    });
-
-    it('Should calculate the record top index', function () {
-
-        var records = [{}, {}, {}];
-
-        expect(utils.calculateRecordTopIndex({
-            TBODY_HEIGHT: 89,
+        expect(utils.calculateAmountOfRecordsToShow({
+            TBODY_HEIGHT: 300,
             TR_HEIGHT: 30,
-            SCROLL_BAR_WIDTH: 17,
-            recordBottomIndex: 2
-        }, records)).to.equal(1);
+            SCROLL_BAR_WIDTH: 17
+        })).to.equal(9);
 
-    });
-
-    it('Should calculate the record bottom index', function () {
-
-        var records = [{}, {}, {}];
-
-        expect(utils.calculateRecordBottomIndex({
-            TBODY_HEIGHT: 89,
+        expect(utils.calculateAmountOfRecordsToShow({
+            TBODY_HEIGHT: 316,
             TR_HEIGHT: 30,
-            SCROLL_BAR_WIDTH: 17,
-            recordTopIndex: 0
-        }, records)).to.equal(1);
+            SCROLL_BAR_WIDTH: 17
+        })).to.equal(9);
 
+        expect(utils.calculateAmountOfRecordsToShow({
+            TBODY_HEIGHT: 317,
+            TR_HEIGHT: 30,
+            SCROLL_BAR_WIDTH: 17
+        })).to.equal(10);
     });
+
+    it('Should calculate the bottom pixel adjustment amount', function () {
+        expect(utils.calculateBottomRecordPixelAmount({
+            TBODY_HEIGHT: 290,
+            TR_HEIGHT: 30,
+            SCROLL_BAR_WIDTH: 17
+        })).to.equal(27);
+
+        expect(utils.calculateBottomRecordPixelAmount({
+            TBODY_HEIGHT: 300,
+            TR_HEIGHT: 30,
+            SCROLL_BAR_WIDTH: 17
+        })).to.equal(17);
+
+        expect(utils.calculateBottomRecordPixelAmount({
+            TBODY_HEIGHT: 316,
+            TR_HEIGHT: 30,
+            SCROLL_BAR_WIDTH: 17
+        })).to.equal(1);
+
+        expect(utils.calculateBottomRecordPixelAmount({
+            TBODY_HEIGHT: 317,
+            TR_HEIGHT: 30,
+            SCROLL_BAR_WIDTH: 17
+        })).to.equal(30);
+    });
+
 });

@@ -379,4 +379,8 @@ describe('Grid', function () {
         grid.render();
         expect(scrollbar.css('display')).to.equal('');
     });
+
+    it('Should have the correct markup', function () {
+        //todo
+    });
 });
