@@ -206,7 +206,7 @@ describe('Grid', function () {
         expect(td.is('.selected')).to.be.true;
 
         // should add a record from insert key
-        td.eq(1).trigger($.Event('keydown', {keyCode: 45}));
+        container.find('tbody').trigger($.Event('keydown', {keyCode: 45}));
         tr = container.find('tbody tr');
         expect(tr).to.have.length(4);
 

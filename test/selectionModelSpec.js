@@ -248,7 +248,6 @@ describe('Selection Model', function () {
 
         expect(this.view.recordTopIndex).to.equal(0);
         expect(this.view.columnTopIndex).to.equal(0);
-        expect(this.view.columnBottomIndex).to.equal(1);
 
         expect(renderSpy.callCount).to.equal(0);
 
